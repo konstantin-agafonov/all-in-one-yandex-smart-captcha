@@ -556,8 +556,16 @@ window.onloadSmartcaptcha = function () {
     const cf7Selector = '.wpcf7-form';
     const defaultSelector = 'form:not(.wpcf7-form)';
 
-    document.querySelectorAll(defaultSelector).forEach(smartcaptchaProcessForm);
-    document.querySelectorAll(cf7Selector).forEach(smartcaptchaProcessForm);
+    function processAllForms() {
+        document.querySelectorAll(defaultSelector).forEach(smartcaptchaProcessForm);
+        document.querySelectorAll(cf7Selector).forEach(smartcaptchaProcessForm);
+    }
+
+    if (document.readyState === 'complete') {
+        processAllForms();
+    } else {
+        window.addEventListener('load', processAllForms);
+    }
 };
 ```
 
