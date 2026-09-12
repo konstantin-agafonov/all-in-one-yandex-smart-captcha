@@ -151,10 +151,7 @@ class Core {
 	 */
 	public function cf7_spam_check( bool $spam ): bool {
 		if ( ! $spam ) {
-			$token = $_POST['smartcaptcha_token'] ?? '';
-			if ( ! empty( $token ) ) {
-				$spam = ! self::verify_token();
-			}
+			$spam = ! self::verify_token();
 		}
 		return $spam;
 	}
