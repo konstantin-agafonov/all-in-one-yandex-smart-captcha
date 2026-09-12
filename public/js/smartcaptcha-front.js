@@ -1,4 +1,4 @@
-function smartcaptchaProcessForm(form) {
+function smartCaptchaProcessForm(form) {
 	const existing = form.querySelector('input[name="smartcaptcha_token"]');
 	if (existing) return;
 
@@ -37,8 +37,8 @@ function smartCaptchaInit() {
 	const cf7Selector = '.wpcf7-form';
 	const defaultSelector = 'form:not(.wpcf7-form)';
 
-    document.querySelectorAll(defaultSelector).forEach(smartcaptchaProcessForm);
-    document.querySelectorAll(cf7Selector).forEach(smartcaptchaProcessForm);
+    document.querySelectorAll(defaultSelector).forEach(smartCaptchaProcessForm);
+    document.querySelectorAll(cf7Selector).forEach(smartCaptchaProcessForm);
 }
 
 window.addEventListener('load', smartCaptchaInit);

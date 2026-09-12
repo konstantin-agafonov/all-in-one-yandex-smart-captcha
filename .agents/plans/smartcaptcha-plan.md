@@ -517,7 +517,7 @@ defined('ABSPATH') || exit;
 Sitekey передаётся через `wp_localize_script()` в глобальный объект `smartcaptchaConfig`.
 
 ```js
-function smartcaptchaProcessForm(form) {
+function smartCaptchaProcessForm(form) {
     const existing = form.querySelector('input[name="smartcaptcha_token"]');
     if (existing) return;
 
@@ -557,8 +557,8 @@ window.onloadSmartcaptcha = function () {
     const defaultSelector = 'form:not(.wpcf7-form)';
 
     function processAllForms() {
-        document.querySelectorAll(defaultSelector).forEach(smartcaptchaProcessForm);
-        document.querySelectorAll(cf7Selector).forEach(smartcaptchaProcessForm);
+        document.querySelectorAll(defaultSelector).forEach(smartCaptchaProcessForm);
+        document.querySelectorAll(cf7Selector).forEach(smartCaptchaProcessForm);
     }
 
     if (document.readyState === 'complete') {
