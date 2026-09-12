@@ -36,7 +36,7 @@ all-in-one-yandex-smart-captcha/
 │       └── usage-instructions.php         # Блок «Использование в теме»
 ├── public/
 │   └── js/
-│       └── smartcaptcha-front.js          # Клиентский JS: инжект токена во все формы
+│       └── smartcaptcha-front.js          # Клиентский JS: инжект токена во все формы (sitekey через wp_localize_script)
 ├── languages/
 │   └── all-in-one-yandex-smart-captcha.pot
 ├── readme.txt
@@ -111,7 +111,7 @@ add_action('plugins_loaded', function () {
 
 ---
 
-## Шаг 2. Ядро плагина — серверная проверка + JS фронтенд
+## Шаг 2. Ядро плагина — серверная проверка + подключение JS
 
 **Файл:** `includes/class-smartcaptcha-core.php`
 
@@ -155,58 +155,17 @@ class Core {
             true
         );
 
-        $js = $this->get_inline_js($settings['sitekey']);
-        wp_add_inline_script('yandex-smartcaptcha', $js, 'after');
-    }
+        wp_enqueue_script(
+            'smartcaptcha-front',
+            AIOYSC_URL . 'public/js/smartcaptcha-front.js',
+            ['yandex-smartcaptcha'],
+            AIOYSC_VERSION,
+            true
+        );
 
-    /**
-     * Inline JS: автоматически находит ВСЕ формы на странице
-     * и инжектит скрытое поле с токеном
-     */
-    private function get_inline_js(string $sitekey): string {
-        return <<<JS
-window.onloadSmartcaptcha = function() {
-    window.smartcaptchaReady = true;
-
-    var selectors = 'form:not(.wpcf7-form)';
-    var cf7Selector = '.wpcf7-form';
-
-    function processForm(form) {
-        var existing = form.querySelector('input[name="smartcaptcha_token"]');
-        if (existing) return;
-
-        var container = document.createElement('div');
-        container.className = 'smartcaptcha-container';
-        container.style.display = 'none';
-        form.appendChild(container);
-
-        try {
-            smartcaptcha.render(container, {
-                sitekey: '{$sitekey}',
-                invisible: true,
-                callback: function(token) {
-                    var input = form.querySelector('input[name="smartcaptcha_token"]');
-                    if (!input) {
-                        input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'smartcaptcha_token';
-                        form.appendChild(input);
-                    }
-                    input.value = token;
-                }
-            });
-        } catch(e) {
-            console.warn('SmartCaptcha render error:', e);
-        }
-    }
-
-    // Кастомные формы (не CF7)
-    document.querySelectorAll(selectors).forEach(processForm);
-
-    // CF7 формы
-    document.querySelectorAll(cf7Selector).forEach(processForm);
-};
-JS;
+        wp_localize_script('smartcaptcha-front', 'smartcaptchaConfig', [
+            'sitekey' => $settings['sitekey'],
+        ]);
     }
 
     /**
@@ -318,7 +277,7 @@ class Admin {
 
     public function add_menu(): void {
         add_options_page(
-            'Yandex SmartCaptcha',
+            'All In One Yandex SmartCaptcha',
             'Yandex SmartCaptcha',
             'manage_options',
             self::PAGE_SLUG,
@@ -551,7 +510,56 @@ if (!AIOYSC\Core::verify_token()) {
 
 ---
 
-## Шаг 5. Интеграция с темой franchbiz
+## Шаг 5. Клиентский JS — отдельный файл
+
+**Файл:** `public/js/smartcaptcha-front.js`
+
+Sitekey передаётся через `wp_localize_script()` в глобальный объект `smartcaptchaConfig`.
+
+```js
+window.onloadSmartcaptcha = function () {
+    window.smartcaptchaReady = true;
+
+    var cf7Selector = '.wpcf7-form';
+    var defaultSelector = 'form:not(.wpcf7-form)';
+
+    function processForm(form) {
+        var existing = form.querySelector('input[name="smartcaptcha_token"]');
+        if (existing) return;
+
+        var container = document.createElement('div');
+        container.className = 'smartcaptcha-container';
+        container.style.display = 'none';
+        form.appendChild(container);
+
+        try {
+            smartcaptcha.render(container, {
+                sitekey: smartcaptchaConfig.sitekey,
+                invisible: true,
+                callback: function (token) {
+                    var input = form.querySelector('input[name="smartcaptcha_token"]');
+                    if (!input) {
+                        input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'smartcaptcha_token';
+                        form.appendChild(input);
+                    }
+                    input.value = token;
+                },
+            });
+        } catch (e) {
+            console.warn('SmartCaptcha render error:', e);
+        }
+    }
+
+    document.querySelectorAll(defaultSelector).forEach(processForm);
+    document.querySelectorAll(cf7Selector).forEach(processForm);
+};
+```
+
+---
+
+## Шаг 6. Интеграция с темой franchbiz
 
 Кастомные AJAX-обработчики темы загружают WordPress через `wp-load.php`, поэтому плагин уже доступен. Достаточно добавить **2 строки** в каждый файл.
 
@@ -588,9 +596,9 @@ if (!AIOYSC\Core::verify_token()) {
 
 ---
 
-## Шаг 6. Клиентский JS — как работает автоматический инжект
+## Шаг 7. Клиентский JS — как работает автоматический инжект
 
-JS-код в `get_inline_js()` делает следующее:
+JS-код в `public/js/smartcaptcha-front.js` делает следующее:
 
 1. Ждёт загрузки SmartCaptcha SDK (`onloadSmartcaptcha`)
 2. Находит **все формы** на странице через `document.querySelectorAll('form:not(.wpcf7-form)')`
@@ -605,7 +613,7 @@ JS-код в `get_inline_js()` делает следующее:
 
 ---
 
-## Шаг 7. Что не нужно менять
+## Шаг 8. Что не нужно менять
 
 - `wp-config.php` — ключи хранятся в БД через настройки плагина
 - `functions.php` темы — ничего не добавляется
@@ -625,7 +633,7 @@ JS-код в `get_inline_js()` делает следующее:
 | `template-parts/admin/field-checkbox.php` | Шаблон: переиспользуемое поле-чекбокс |
 | `template-parts/admin/field-text.php` | Шаблон: переиспользуемое поле text/password |
 | `template-parts/admin/usage-instructions.php` | Шаблон: блок «Использование в теме» |
-| `public/js/smartcaptcha-front.js` | (опционально) внешний JS-файл вместо inline |
+| `public/js/smartcaptcha-front.js` | Клиентский JS: инжект токена во все формы (sitekey через wp_localize_script) |
 | `readme.txt` | Описание для каталога плагинов |
 | `uninstall.php` | Очистка опций при удалении |
 | `languages/all-in-one-yandex-smart-captcha.pot` | Шаблон переводов |
