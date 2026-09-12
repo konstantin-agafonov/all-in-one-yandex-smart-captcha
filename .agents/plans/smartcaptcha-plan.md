@@ -27,7 +27,13 @@ all-in-one-yandex-smart-captcha/
 ├── all-in-one-yandex-smart-captcha.php    # Главный файл с хедером
 ├── includes/
 │   ├── class-smartcaptcha-core.php        # Ядро: проверка токена, хуки
-│   └── class-smartcaptcha-admin.php       # Страница настроек
+│   └── class-smartcaptcha-admin.php       # Логика настроек (контроллер)
+├── template-parts/
+│   └── admin/
+│       ├── settings-page.php              # Обёртка страницы настроек (форма + кнопка)
+│       ├── field-checkbox.php             # Переиспользуемое поле-чекбокс
+│       ├── field-text.php                 # Переиспользуемое поле text/password
+│       └── usage-instructions.php         # Блок «Использование в теме»
 ├── public/
 │   └── js/
 │       └── smartcaptcha-front.js          # Клиентский JS: инжект токена во все формы
@@ -36,6 +42,16 @@ all-in-one-yandex-smart-captcha/
 ├── readme.txt
 └── uninstall.php
 ```
+
+### Найденные переиспользуемые паттерны разметки
+
+| Паттерн | Где встречается | Кол-во | Решение |
+|---------|-----------------|--------|---------|
+| `<p class="description">...</p>` | Поле checkbox + поле text | 2 | Выносится в шаблон поля |
+| Чекбокс с label + description | `enabled`, `cf7_auto` | 2 | Один шаблон `field-checkbox.php` |
+| Text/password input + description | `sitekey`, `secret` | 2 | Один шаблон `field-text.php` |
+| `<div class="wrap"><h1><form>...</form></div>` | Страница настроек | 1 | Шаблон `settings-page.php` |
+| Блок «Использование в теме» | Страница настроек | 1 | Шаблон `usage-instructions.php` |
 
 ---
 
@@ -267,9 +283,14 @@ JS;
 
 ---
 
-## Шаг 3. Админка — страница настроек
+## Шаг 3. Админка — контроллер (без разметки)
 
 **Файл:** `includes/class-smartcaptcha-admin.php`
+
+Класс-контроллер. Вся разметка вынесена в `template-parts/admin/`. Класс только:
+- Регистрирует меню и настройки
+- Передаёт данные в шаблоны через `$args`
+- Вызывает `include()` шаблонов
 
 ```php
 <?php
@@ -329,10 +350,26 @@ class Admin {
             self::PAGE_SLUG
         );
 
-        add_settings_field('enabled', 'Включить', [$this, 'render_checkbox'], self::PAGE_SLUG, 'aioysc_main', ['key' => 'enabled']);
-        add_settings_field('sitekey', 'Site Key', [$this, 'render_text'], self::PAGE_SLUG, 'aioysc_main', ['key' => 'sitekey', 'desc' => 'Публичный ключ из кабинета Яндекса']);
-        add_settings_field('secret', 'Secret Key', [$this, 'render_text'], self::PAGE_SLUG, 'aioysc_main', ['key' => 'secret', 'type' => 'password', 'desc' => 'Секретный ключ из кабинета Яндекса']);
-        add_settings_field('cf7_auto', 'CF7 автоинтеграция', [$this, 'render_checkbox'], self::PAGE_SLUG, 'aioysc_main', ['key' => 'cf7_auto', 'desc' => 'Автоматически проверять токен во всех формах Contact Form 7']);
+        add_settings_field('enabled', 'Включить', [$this, 'render_checkbox'], self::PAGE_SLUG, 'aioysc_main', [
+            'key'  => 'enabled',
+            'desc' => 'Включить или отключить защиту SmartCaptcha',
+        ]);
+
+        add_settings_field('sitekey', 'Site Key', [$this, 'render_text'], self::PAGE_SLUG, 'aioysc_main', [
+            'key'  => 'sitekey',
+            'desc' => 'Публичный ключ из кабинета Яндекса',
+        ]);
+
+        add_settings_field('secret', 'Secret Key', [$this, 'render_text'], self::PAGE_SLUG, 'aioysc_main', [
+            'key'   => 'secret',
+            'type'  => 'password',
+            'desc'  => 'Секретный ключ из кабинета Яндекса',
+        ]);
+
+        add_settings_field('cf7_auto', 'CF7 автоинтеграция', [$this, 'render_checkbox'], self::PAGE_SLUG, 'aioysc_main', [
+            'key'  => 'cf7_auto',
+            'desc' => 'Автоматически проверять токен во всех формах Contact Form 7',
+        ]);
     }
 
     public function sanitize(array $input): array {
@@ -345,64 +382,176 @@ class Admin {
         ];
     }
 
+    /**
+     * Рендер страницы настроек — подключает шаблон
+     */
     public function render_page(): void {
-        if (!current_user_can('manage_options')) return;
-        ?>
-        <div class="wrap">
-            <h1>Yandex SmartCaptcha</h1>
-            <form action="options.php" method="post">
-                <?php
-                settings_fields(self::OPTION_GROUP);
-                do_settings_sections(self::PAGE_SLUG);
-                submit_button('Сохранить');
-                ?>
-            </form>
-            <hr>
-            <h3>Использование в теме</h3>
-            <p>В обработчике AJAX-формы добавьте:</p>
-            <pre><code>require_once ABSPATH . 'wp-content/plugins/all-in-one-yandex-smart-captcha/includes/class-smartcaptcha-core.php';
-if (!AIOYSC\Core::verify_token()) {
-    wp_send_json_error(['message' => 'Проверка защиты не пройдена.']);
-    wp_die();
-}</code></pre>
-        </div>
-        <?php
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        $args = [
+            'option_group' => self::OPTION_GROUP,
+            'page_slug'    => self::PAGE_SLUG,
+        ];
+
+        include AIOYSC_PATH . 'template-parts/admin/settings-page.php';
     }
 
+    /**
+     * Рендер чекбокса — подключает шаблон
+     */
     public function render_checkbox(array $args): void {
         $options = get_option(self::OPTION_NAME, []);
-        $value = $options[$args['key']] ?? false;
-        ?>
-        <input type="checkbox"
-               id="<?php echo esc_attr($args['key']); ?>"
-               name="<?php echo esc_attr(self::OPTION_NAME . '[' . $args['key'] . ']'); ?>"
-               value="1"
-               <?php checked($value, true); ?>>
-        <?php if (!empty($args['desc'])): ?>
-            <p class="description"><?php echo esc_html($args['desc']); ?></p>
-        <?php endif;
+        $args['value'] = $options[$args['key']] ?? false;
+
+        include AIOYSC_PATH . 'template-parts/admin/field-checkbox.php';
     }
 
+    /**
+     * Рендер text/password — подключает шаблон
+     */
     public function render_text(array $args): void {
         $options = get_option(self::OPTION_NAME, []);
-        $value = $options[$args['key']] ?? '';
-        $type = $args['type'] ?? 'text';
-        ?>
-        <input type="<?php echo esc_attr($type); ?>"
-               id="<?php echo esc_attr($args['key']); ?>"
-               name="<?php echo esc_attr(self::OPTION_NAME . '[' . $args['key'] . ']'); ?>"
-               value="<?php echo esc_attr($value); ?>"
-               class="regular-text">
-        <?php if (!empty($args['desc'])): ?>
-            <p class="description"><?php echo esc_html($args['desc']); ?></p>
-        <?php endif;
+        $args['value'] = $options[$args['key']] ?? '';
+        $args['type']  = $args['type'] ?? 'text';
+
+        include AIOYSC_PATH . 'template-parts/admin/field-text.php';
     }
 }
 ```
 
 ---
 
-## Шаг 4. Интеграция с темой franchbiz
+## Шаг 4. Шаблоны — template-parts/admin/
+
+### 4a. `template-parts/admin/settings-page.php`
+
+Обёртка страницы настроек. Содержит: `<div class="wrap">`, заголовок, форму, кнопку «Сохранить», секцию «Использование в теме».
+
+```php
+<?php
+/**
+ * Страница настроек SmartCaptcha.
+ *
+ * Переменные:
+ * @var string $option_group  Группа опций для settings_fields()
+ * @var string $page_slug     Slug страницы для do_settings_sections()
+ */
+
+defined('ABSPATH') || exit;
+?>
+<div class="wrap">
+    <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+
+    <form action="options.php" method="post">
+        <?php
+        settings_fields($option_group);
+        do_settings_sections($page_slug);
+        submit_button('Сохранить');
+        ?>
+    </form>
+
+    <?php include AIOYSC_PATH . 'template-parts/admin/usage-instructions.php'; ?>
+</div>
+```
+
+---
+
+### 4b. `template-parts/admin/field-checkbox.php`
+
+Переиспользуемое поле-чекбокс. Используется для настроек `enabled` и `cf7_auto`.
+
+```php
+<?php
+/**
+ * Поле-чекбокс настроек.
+ *
+ * Переменные:
+ * @var string  $key   Ключ опции (имя поля)
+ * @var string  $desc  Описание под полем
+ * @var mixed   $value Текущее значение (bool)
+ */
+
+defined('ABSPATH') || exit;
+
+$name = AIOYSC\Admin::OPTION_NAME . '[' . $args['key'] . ']';
+?>
+<input type="checkbox"
+       id="<?php echo esc_attr($args['key']); ?>"
+       name="<?php echo esc_attr($name); ?>"
+       value="1"
+       <?php checked(!empty($args['value'])); ?>>
+<?php if (!empty($args['desc'])): ?>
+    <p class="description"><?php echo esc_html($args['desc']); ?></p>
+<?php endif; ?>
+```
+
+---
+
+### 4c. `template-parts/admin/field-text.php`
+
+Переиспользуемое поле text/password. Используется для настроек `sitekey` и `secret`.
+
+```php
+<?php
+/**
+ * Поле text/password настроек.
+ *
+ * Переменные:
+ * @var string  $key   Ключ опции (имя поля)
+ * @var string  $desc  Описание под полем
+ * @var string  $type  Тип input: 'text' или 'password'
+ * @var string  $value Текущее значение
+ */
+
+defined('ABSPATH') || exit;
+
+$name = AIOYSC\Admin::OPTION_NAME . '[' . $args['key'] . ']';
+$type = $args['type'] ?? 'text';
+?>
+<input type="<?php echo esc_attr($type); ?>"
+       id="<?php echo esc_attr($args['key']); ?>"
+       name="<?php echo esc_attr($name); ?>"
+       value="<?php echo esc_attr($args['value']); ?>"
+       class="regular-text">
+<?php if (!empty($args['desc'])): ?>
+    <p class="description"><?php echo esc_html($args['desc']); ?></p>
+<?php endif; ?>
+```
+
+---
+
+### 4d. `template-parts/admin/usage-instructions.php`
+
+Блок с инструкцией по использованию в теме. Переиспользуется как отдельная секция.
+
+```php
+<?php
+/**
+ * Блок «Использование в теме» на странице настроек.
+ */
+
+defined('ABSPATH') || exit;
+?>
+<hr>
+<h3>Использование в теме</h3>
+<p>В обработчике AJAX-формы добавьте:</p>
+<pre><code><?php echo esc_html(
+'require_once ABSPATH . \'wp-content/plugins/all-in-one-yandex-smart-captcha/includes/class-smartcaptcha-core.php\';
+if (!AIOYSC\Core::verify_token()) {
+    wp_send_json_error([\'message\' => \'Проверка защиты не пройдена.\']);
+    wp_die();
+}'
+); ?></code></pre>
+<p class="description">
+    Contact Form 7 интегрируется автоматически — фильтр <code>wpcf7_spam</code> подключается при активации плагина.
+</p>
+```
+
+---
+
+## Шаг 5. Интеграция с темой franchbiz
 
 Кастомные AJAX-обработчики темы загружают WordPress через `wp-load.php`, поэтому плагин уже доступен. Достаточно добавить **2 строки** в каждый файл.
 
@@ -439,7 +588,7 @@ if (!AIOYSC\Core::verify_token()) {
 
 ---
 
-## Шаг 5. Клиентский JS — как работает автоматический инжект
+## Шаг 6. Клиентский JS — как работает автоматический инжект
 
 JS-код в `get_inline_js()` делает следующее:
 
@@ -456,7 +605,7 @@ JS-код в `get_inline_js()` делает следующее:
 
 ---
 
-## Шаг 6. Что не нужно менять
+## Шаг 7. Что не нужно менять
 
 - `wp-config.php` — ключи хранятся в БД через настройки плагина
 - `functions.php` темы — ничего не добавляется
@@ -471,7 +620,11 @@ JS-код в `get_inline_js()` делает следующее:
 |------|----------|
 | `all-in-one-yandex-smart-captcha.php` | Главный файл с хедером плагина, константы, подключение классов |
 | `includes/class-smartcaptcha-core.php` | Ядро: `verify_token()` (публичный API), enqueue JS, CF7 фильтр |
-| `includes/class-smartcaptcha-admin.php` | Страница настроек в админке (sitekey, secret, вкл/выкл) |
+| `includes/class-smartcaptcha-admin.php` | Контроллер: регистрация настроек, подключение шаблонов |
+| `template-parts/admin/settings-page.php` | Шаблон: обёртка страницы настроек (форма + кнопка) |
+| `template-parts/admin/field-checkbox.php` | Шаблон: переиспользуемое поле-чекбокс |
+| `template-parts/admin/field-text.php` | Шаблон: переиспользуемое поле text/password |
+| `template-parts/admin/usage-instructions.php` | Шаблон: блок «Использование в теме» |
 | `public/js/smartcaptcha-front.js` | (опционально) внешний JS-файл вместо inline |
 | `readme.txt` | Описание для каталога плагинов |
 | `uninstall.php` | Очистка опций при удалении |
@@ -498,6 +651,7 @@ JS-код в `get_inline_js()` делает следующее:
 | CF7-интеграция в файле темы | CF7-интеграция в плагине, работает сразу |
 | Нельзя переиспользовать на другом сайте | Залил zip-плагин → включил → работает |
 | Нет админки | Страница настроек в WordPress |
+| Вся разметка в PHP-классе | Разметка вынесена в `template-parts/`, переиспользуемые шаблоны |
 
 ---
 
