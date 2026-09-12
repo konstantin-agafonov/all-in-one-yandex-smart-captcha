@@ -8,7 +8,7 @@ function smartcaptchaProcessForm(form) {
 	form.appendChild(container);
 
 	try {
-		smartcaptcha.render(container, {
+		smartCaptcha.render(container, {
 			sitekey: smartcaptchaConfig.sitekey,
 			invisible: true,
 			callback: function (token) {
