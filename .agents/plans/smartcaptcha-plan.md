@@ -681,3 +681,27 @@ JS-код в `public/js/smartcaptcha-front.js` делает следующее:
 2. **CF7-подход** — фильтр `wpcf7_spam` рекомендован (пометит как спам, не ломает флоу CF7)
 3. **Кастомное сообщение CF7** — по умолчанию покажет «spam»; если нужно кастомное — потребуется доп. хук `wpcf7_additional_errors`
 4. **Nonces** — кастомные AJAX-формы темы не используют WordPress nonces (проблема темы, не плагина). Рекомендуется добавить nonce-проверку в тему отдельно
+
+---
+
+## Исправленные баги
+
+### Баг: пустые поля на странице настроек
+
+**Причина:** в `Admin::render_page()` переменные `$option_group` и `$page_slug` передавались через массив `$args`, но шаблон `settings-page.php` обращался к ним напрямую. `include` не извлекает ключи массива в переменные.
+
+**Исправление:** определять переменные перед `include`:
+
+```php
+// Было:
+$args = [
+    'option_group' => self::OPTION_GROUP,
+    'page_slug'    => self::PAGE_SLUG,
+];
+include AIOYSC_PATH . 'template-parts/admin/settings-page.php';
+
+// Стало:
+$option_group = self::OPTION_GROUP;
+$page_slug    = self::PAGE_SLUG;
+include AIOYSC_PATH . 'template-parts/admin/settings-page.php';
+```

@@ -95,10 +95,8 @@ class Admin {
 			return;
 		}
 
-		$args = [
-			'option_group' => self::OPTION_GROUP,
-			'page_slug'    => self::PAGE_SLUG,
-		];
+		$option_group = self::OPTION_GROUP;
+		$page_slug    = self::PAGE_SLUG;
 
 		include AIOYSC_PATH . 'template-parts/admin/settings-page.php';
 	}
