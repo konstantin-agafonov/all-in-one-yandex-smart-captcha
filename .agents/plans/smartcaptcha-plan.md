@@ -497,8 +497,7 @@ defined('ABSPATH') || exit;
 <h3>Использование в теме</h3>
 <p>В обработчике AJAX-формы добавьте:</p>
 <pre><code><?php echo esc_html(
-'require_once ABSPATH . \'wp-content/plugins/all-in-one-yandex-smart-captcha/includes/class-smartcaptcha-core.php\';
-if (!AIOYSC\Core::verify_token()) {
+'if (class_exists(\'AIOYSC\\Core\') && !AIOYSC\Core::verify_token()) {
     wp_send_json_error([\'message\' => \'Проверка защиты не пройдена.\']);
     wp_die();
 }'
@@ -561,12 +560,12 @@ window.onloadSmartcaptcha = function () {
 
 ## Шаг 6. Интеграция с темой franchbiz
 
-Кастомные AJAX-обработчики темы загружают WordPress через `wp-load.php`, поэтому плагин уже доступен. Достаточно добавить **2 строки** в каждый файл.
+Кастомные AJAX-обработчики темы загружают WordPress через `wp-load.php`, поэтому плагин уже доступен. Достаточно добавить **5 строк** в каждый файл.
 
 ### `ajax/send-presentation.php` — после `require($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php');`
 
 ```php
-if (!AIOYSC\Core::verify_token()) {
+if (class_exists('AIOYSC\\Core') && !AIOYSC\Core::verify_token()) {
     echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
     exit;
 }
@@ -575,7 +574,7 @@ if (!AIOYSC\Core::verify_token()) {
 ### `ajax/send-presentation-channel.php` — после `require`:
 
 ```php
-if (!AIOYSC\Core::verify_token()) {
+if (class_exists('AIOYSC\\Core') && !AIOYSC\Core::verify_token()) {
     echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
     exit;
 }
@@ -584,7 +583,7 @@ if (!AIOYSC\Core::verify_token()) {
 ### `ajax/send-pres-channel_single.php` — после `require`:
 
 ```php
-if (!AIOYSC\Core::verify_token()) {
+if (class_exists('AIOYSC\\Core') && !AIOYSC\Core::verify_token()) {
     echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
     exit;
 }
@@ -638,7 +637,7 @@ JS-код в `public/js/smartcaptcha-front.js` делает следующее:
 | `uninstall.php` | Очистка опций при удалении |
 | `languages/all-in-one-yandex-smart-captcha.pot` | Шаблон переводов |
 
-### Изменения в теме franchbiz (3 файла, по 2 строки в каждый)
+### Изменения в теме franchbiz (3 файла, по 5 строк в каждый)
 
 | Файл | Действие |
 |------|----------|
