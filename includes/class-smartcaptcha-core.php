@@ -31,18 +31,18 @@ class Core {
 		}
 
 		wp_enqueue_script(
-			'yandex-smartcaptcha',
-			'https://smartcaptcha.cloud.yandex.ru/captcha.js?render=onload&onload=onloadSmartcaptcha',
+			'smartcaptcha-front',
+			AIOYSC_URL . 'public/js/smartcaptcha-front.js',
 			[],
-			null,
+			AIOYSC_VERSION,
 			true
 		);
 
 		wp_enqueue_script(
-			'smartcaptcha-front',
-			AIOYSC_URL . 'public/js/smartcaptcha-front.js',
-			[ 'yandex-smartcaptcha' ],
-			AIOYSC_VERSION,
+			'yandex-smartcaptcha',
+			'https://smartcaptcha.cloud.yandex.ru/captcha.js?render=explicit',
+			[ 'smartcaptcha-front' ],
+			null,
 			true
 		);
 

@@ -4,7 +4,7 @@ function smartcaptchaProcessForm(form) {
 
 	const container = document.createElement('div');
 	container.className = 'smartcaptcha-container';
-	container.style.display = 'none';
+	container.style.cssText = 'position:fixed;left:-9999px;width:300px;height:65px;visibility:hidden;';
 	form.appendChild(container);
 
 	try {
@@ -27,24 +27,18 @@ function smartcaptchaProcessForm(form) {
 	}
 }
 
-window.onloadSmartcaptcha = function () {
-	window.smartcaptchaReady = true;
-
-	if (typeof smartcaptchaConfig === 'undefined' || !smartcaptchaConfig.sitekey) {
+function smartCaptchaInit() {
+	if (typeof smartCaptcha === 'undefined' || typeof smartcaptchaConfig === 'undefined' || !smartcaptchaConfig.sitekey) {
 		return;
 	}
+
+	window.smartcaptchaReady = true;
 
 	const cf7Selector = '.wpcf7-form';
 	const defaultSelector = 'form:not(.wpcf7-form)';
 
-	function processAllForms() {
-		document.querySelectorAll(defaultSelector).forEach(smartcaptchaProcessForm);
-		document.querySelectorAll(cf7Selector).forEach(smartcaptchaProcessForm);
-	}
+    document.querySelectorAll(defaultSelector).forEach(smartcaptchaProcessForm);
+    document.querySelectorAll(cf7Selector).forEach(smartcaptchaProcessForm);
+}
 
-	if (document.readyState === 'complete') {
-		processAllForms();
-	} else {
-		window.addEventListener('load', processAllForms);
-	}
-};
+window.addEventListener('load', smartCaptchaInit);
