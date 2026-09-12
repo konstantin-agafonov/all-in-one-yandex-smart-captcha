@@ -517,6 +517,35 @@ defined('ABSPATH') || exit;
 Sitekey передаётся через `wp_localize_script()` в глобальный объект `smartcaptchaConfig`.
 
 ```js
+function smartcaptchaProcessForm(form) {
+    const existing = form.querySelector('input[name="smartcaptcha_token"]');
+    if (existing) return;
+
+    const container = document.createElement('div');
+    container.className = 'smartcaptcha-container';
+    container.style.display = 'none';
+    form.appendChild(container);
+
+    try {
+        smartcaptcha.render(container, {
+            sitekey: smartcaptchaConfig.sitekey,
+            invisible: true,
+            callback: function (token) {
+                let input = form.querySelector('input[name="smartcaptcha_token"]');
+                if (!input) {
+                    input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'smartcaptcha_token';
+                    form.appendChild(input);
+                }
+                input.value = token;
+            },
+        });
+    } catch (e) {
+        console.warn('SmartCaptcha render error:', e);
+    }
+}
+
 window.onloadSmartcaptcha = function () {
     window.smartcaptchaReady = true;
 
@@ -524,40 +553,11 @@ window.onloadSmartcaptcha = function () {
         return;
     }
 
-    var cf7Selector = '.wpcf7-form';
-    var defaultSelector = 'form:not(.wpcf7-form)';
+    const cf7Selector = '.wpcf7-form';
+    const defaultSelector = 'form:not(.wpcf7-form)';
 
-    function processForm(form) {
-        var existing = form.querySelector('input[name="smartcaptcha_token"]');
-        if (existing) return;
-
-        var container = document.createElement('div');
-        container.className = 'smartcaptcha-container';
-        container.style.display = 'none';
-        form.appendChild(container);
-
-        try {
-            smartcaptcha.render(container, {
-                sitekey: smartcaptchaConfig.sitekey,
-                invisible: true,
-                callback: function (token) {
-                    var input = form.querySelector('input[name="smartcaptcha_token"]');
-                    if (!input) {
-                        input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'smartcaptcha_token';
-                        form.appendChild(input);
-                    }
-                    input.value = token;
-                },
-            });
-        } catch (e) {
-            console.warn('SmartCaptcha render error:', e);
-        }
-    }
-
-    document.querySelectorAll(defaultSelector).forEach(processForm);
-    document.querySelectorAll(cf7Selector).forEach(processForm);
+    document.querySelectorAll(defaultSelector).forEach(smartcaptchaProcessForm);
+    document.querySelectorAll(cf7Selector).forEach(smartcaptchaProcessForm);
 };
 ```
 
