@@ -139,11 +139,12 @@ class Core {
     }
 
     /**
-     * Подключение JS SmartCaptcha на фронтенде
+     * Подключение JS SmartCaptcha на фронтенде.
+     * Не подключается если ключ или секрет пусты — форма работает без капчи.
      */
     public function enqueue_assets(): void {
         $settings = get_option('aioysc_settings', []);
-        if (empty($settings['enabled']) || empty($settings['sitekey'])) {
+        if (empty($settings['enabled']) || empty($settings['sitekey']) || empty($settings['secret'])) {
             return;
         }
 
@@ -186,7 +187,7 @@ class Core {
 
         if (empty($secret)) {
             error_log('SmartCaptcha: секретный ключ не задан в настройках плагина');
-            return true; // dev-режим: пропускаем если ключ не задан
+            return false;
         }
 
         $ip = self::get_client_ip();
@@ -519,6 +520,10 @@ Sitekey передаётся через `wp_localize_script()` в глобаль
 window.onloadSmartcaptcha = function () {
     window.smartcaptchaReady = true;
 
+    if (typeof smartcaptchaConfig === 'undefined' || !smartcaptchaConfig.sitekey) {
+        return;
+    }
+
     var cf7Selector = '.wpcf7-form';
     var defaultSelector = 'form:not(.wpcf7-form)';
 
@@ -626,7 +631,7 @@ JS-код в `public/js/smartcaptcha-front.js` делает следующее:
 | Файл | Описание |
 |------|----------|
 | `all-in-one-yandex-smart-captcha.php` | Главный файл с хедером плагина, константы, подключение классов |
-| `includes/class-smartcaptcha-core.php` | Ядро: `verify_token()` (публичный API), enqueue JS, CF7 фильтр |
+| `includes/class-smartcaptcha-core.php` | Ядро: серверная верификация, подключение JS-файлов, CF7 фильтр |
 | `includes/class-smartcaptcha-admin.php` | Контроллер: регистрация настроек, подключение шаблонов |
 | `template-parts/admin/settings-page.php` | Шаблон: обёртка страницы настроек (форма + кнопка) |
 | `template-parts/admin/field-checkbox.php` | Шаблон: переиспользуемое поле-чекбокс |
@@ -666,6 +671,5 @@ JS-код в `public/js/smartcaptcha-front.js` делает следующее:
 
 1. **sitekey** — нужен ключ из кабинета Яндекса (задаётся в админке плагина)
 2. **CF7-подход** — фильтр `wpcf7_spam` рекомендован (пометит как спам, не ломает флоу CF7)
-3. **Fallback** — если секретный ключ не задан (dev-режим) — пропуск заложен в `verify_token()`
-4. **Кастомное сообщение CF7** — по умолчанию покажет «spam»; если нужно кастомное — потребуется доп. хук `wpcf7_additional_errors`
-5. **Nonces** — кастомные AJAX-формы темы не используют WordPress nonces (проблема темы, не плагина). Рекомендуется добавить nonce-проверку в тему отдельно
+3. **Кастомное сообщение CF7** — по умолчанию покажет «spam»; если нужно кастомное — потребуется доп. хук `wpcf7_additional_errors`
+4. **Nonces** — кастомные AJAX-формы темы не используют WordPress nonces (проблема темы, не плагина). Рекомендуется добавить nonce-проверку в тему отдельно
