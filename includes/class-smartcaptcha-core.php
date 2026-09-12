@@ -15,9 +15,17 @@ class Core {
 
 	private function __construct() {
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+		add_action( 'wp_head', [ $this, 'preconnect' ], 1 );
 
 		// Auto-integration with CF7.
 		add_filter( 'wpcf7_spam', [ $this, 'cf7_spam_check' ] );
+	}
+
+	/**
+	 * Add preconnect hint for Yandex SmartCaptcha CDN.
+	 */
+	public function preconnect(): void {
+		echo '<link rel="preconnect" href="https://smartcaptcha.cloud.yandex.ru" crossorigin>' . "\n";
 	}
 
 	/**
@@ -35,7 +43,7 @@ class Core {
 			AIOYSC_URL . 'public/js/smartcaptcha-front.js',
 			[],
 			AIOYSC_VERSION,
-			true
+			[ 'in_footer' => true, 'strategy' => 'defer' ]
 		);
 
 		wp_enqueue_script(
@@ -43,7 +51,7 @@ class Core {
 			'https://smartcaptcha.cloud.yandex.ru/captcha.js?render=explicit',
 			[ 'smartcaptcha-front' ],
 			null,
-			true
+			[ 'in_footer' => true, 'strategy' => 'defer' ]
 		);
 
 		wp_localize_script( 'smartcaptcha-front', 'smartcaptchaConfig', [
