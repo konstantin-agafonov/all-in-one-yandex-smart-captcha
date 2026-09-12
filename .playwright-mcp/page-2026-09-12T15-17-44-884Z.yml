@@ -1,0 +1,375 @@
+- generic [ref=f2e2]:
+  - navigation "Главное меню":
+    - link "Перейти к основному содержимому" [ref=f2e3] [cursor=pointer]:
+      - /url: "#wpbody-content"
+    - link "Перейти к верхней панели" [ref=f2e4] [cursor=pointer]:
+      - /url: "#wp-toolbar"
+    - list [ref=f2e7]:
+      - listitem [ref=f2e8]:
+        - link "Консоль" [ref=f2e9] [cursor=pointer]:
+          - /url: index.php
+          - generic [aria-hidden] [ref=f2e10]: 
+        - list [ref=f2e12]:
+          - listitem [ref=f2e13]:
+            - link "Главная" [ref=f2e14] [cursor=pointer]:
+              - /url: index.php
+          - listitem [ref=f2e15]:
+            - link "Обновления 9" [ref=f2e16] [cursor=pointer]:
+              - /url: update-core.php
+              - text: Обновления
+              - generic [ref=f2e17]: "9"
+      - listitem [aria-hidden] [ref=f2e18]
+      - listitem [ref=f2e20]:
+        - link "Записи" [ref=f2e21] [cursor=pointer]:
+          - /url: edit.php
+          - generic [aria-hidden] [ref=f2e22]: 
+        - list [ref=f2e24]:
+          - listitem [ref=f2e25]:
+            - link "Все записи" [ref=f2e26] [cursor=pointer]:
+              - /url: edit.php
+          - listitem [ref=f2e27]:
+            - link "Добавить запись" [ref=f2e28] [cursor=pointer]:
+              - /url: post-new.php
+          - listitem [ref=f2e29]:
+            - link "Рубрики" [ref=f2e30] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=category
+          - listitem [ref=f2e31]:
+            - link "Метки" [ref=f2e32] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=post_tag
+      - listitem [ref=f2e33]:
+        - link "Медиафайлы" [ref=f2e34] [cursor=pointer]:
+          - /url: upload.php
+          - generic [aria-hidden] [ref=f2e35]: 
+        - list [ref=f2e37]:
+          - listitem [ref=f2e38]:
+            - link "Медиатека" [ref=f2e39] [cursor=pointer]:
+              - /url: upload.php
+          - listitem [ref=f2e40]:
+            - link "Добавить медиафайл" [ref=f2e41] [cursor=pointer]:
+              - /url: media-new.php
+      - listitem [ref=f2e42]:
+        - link "Страницы" [ref=f2e43] [cursor=pointer]:
+          - /url: edit.php?post_type=page
+          - generic [aria-hidden] [ref=f2e44]: 
+        - list [ref=f2e46]:
+          - listitem [ref=f2e47]:
+            - link "Все страницы" [ref=f2e48] [cursor=pointer]:
+              - /url: edit.php?post_type=page
+          - listitem [ref=f2e49]:
+            - link "Добавить страницу" [ref=f2e50] [cursor=pointer]:
+              - /url: post-new.php?post_type=page
+      - listitem [ref=f2e51]:
+        - link "SheetBridge" [ref=f2e52] [cursor=pointer]:
+          - /url: edit.php?post_type=sheet_bridge
+          - generic [aria-hidden] [ref=f2e53]: 
+        - list [ref=f2e55]:
+          - listitem [ref=f2e56]:
+            - link "All Sheet Bridges" [ref=f2e57] [cursor=pointer]:
+              - /url: edit.php?post_type=sheet_bridge
+          - listitem [ref=f2e58]:
+            - link "Add New Sheet Bridge" [ref=f2e59] [cursor=pointer]:
+              - /url: post-new.php?post_type=sheet_bridge
+      - listitem [ref=f2e60]:
+        - link "Комментарии" [ref=f2e61] [cursor=pointer]:
+          - /url: edit-comments.php
+          - generic [aria-hidden] [ref=f2e62]: 
+      - listitem [ref=f2e64]:
+        - link "Flamingo" [ref=f2e65] [cursor=pointer]:
+          - /url: admin.php?page=flamingo
+          - generic [aria-hidden] [ref=f2e66]: 
+        - list [ref=f2e68]:
+          - listitem [ref=f2e69]:
+            - link "Адресная книга" [ref=f2e70] [cursor=pointer]:
+              - /url: admin.php?page=flamingo
+          - listitem [ref=f2e71]:
+            - link "Входящие сообщения" [ref=f2e72] [cursor=pointer]:
+              - /url: admin.php?page=flamingo_inbound
+      - listitem [ref=f2e73]:
+        - link "Contact Form 7" [ref=f2e74] [cursor=pointer]:
+          - /url: admin.php?page=wpcf7
+          - generic [aria-hidden] [ref=f2e75]: 
+        - list [ref=f2e77]:
+          - listitem [ref=f2e78]:
+            - link "Контактные формы" [ref=f2e79] [cursor=pointer]:
+              - /url: admin.php?page=wpcf7
+          - listitem [ref=f2e80]:
+            - link "Добавить контактную форму" [ref=f2e81] [cursor=pointer]:
+              - /url: admin.php?page=wpcf7-new
+          - listitem [ref=f2e82]:
+            - link "Интеграция" [ref=f2e83] [cursor=pointer]:
+              - /url: admin.php?page=wpcf7-integration
+      - listitem [ref=f2e84]:
+        - link "Ghost Kit" [ref=f2e85] [cursor=pointer]:
+          - /url: admin.php?page=ghostkit
+        - list [ref=f2e88]:
+          - listitem [ref=f2e89]:
+            - link "Блоки" [ref=f2e90] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit
+          - listitem [ref=f2e91]:
+            - link "Значки" [ref=f2e92] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit&sub_page=icons
+          - listitem [ref=f2e93]:
+            - link "Типографика" [ref=f2e94] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit&sub_page=typography
+          - listitem [ref=f2e95]:
+            - link "Шрифты" [ref=f2e96] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit&sub_page=fonts
+          - listitem [ref=f2e97]:
+            - link "Breakpoints" [ref=f2e98] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit&sub_page=breakpoints
+          - listitem [ref=f2e99]:
+            - link "CSS и JavaScript" [ref=f2e100] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit&sub_page=css_js
+          - listitem [ref=f2e101]:
+            - link " Получить PRO" [ref=f2e102] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit_go_pro
+              - generic [ref=f2e103]: 
+              - text: Получить PRO
+      - listitem [aria-hidden] [ref=f2e104]
+      - listitem [ref=f2e106]:
+        - link "Внешний вид" [ref=f2e107] [cursor=pointer]:
+          - /url: themes.php
+          - generic [aria-hidden] [ref=f2e108]: 
+        - list [ref=f2e110]:
+          - listitem [ref=f2e111]:
+            - link "Темы" [ref=f2e112] [cursor=pointer]:
+              - /url: themes.php
+          - listitem [ref=f2e113]:
+            - link "Паттерны" [ref=f2e114] [cursor=pointer]:
+              - /url: site-editor.php?p=/pattern
+          - listitem [ref=f2e115]:
+            - link "Настроить" [ref=f2e116] [cursor=pointer]:
+              - /url: customize.php?return=%2Fwp-admin%2Foptions-general.php%3Fpage%3Daioysc-settings
+          - listitem [ref=f2e117]:
+            - link "Шрифты" [ref=f2e118] [cursor=pointer]:
+              - /url: font-library.php
+          - listitem [ref=f2e119]:
+            - link "Меню" [ref=f2e120] [cursor=pointer]:
+              - /url: nav-menus.php
+          - listitem [ref=f2e121]:
+            - link "Редактор тем" [ref=f2e122] [cursor=pointer]:
+              - /url: theme-editor.php
+      - listitem [ref=f2e123]:
+        - link "Плагины 9" [ref=f2e124] [cursor=pointer]:
+          - /url: plugins.php
+          - generic [aria-hidden] [ref=f2e125]: 
+          - generic [ref=f2e126]:
+            - text: Плагины
+            - generic [ref=f2e127]: "9"
+        - list [ref=f2e128]:
+          - listitem [ref=f2e129]:
+            - link "Установленные" [ref=f2e130] [cursor=pointer]:
+              - /url: plugins.php
+          - listitem [ref=f2e131]:
+            - link "Добавить плагин" [ref=f2e132] [cursor=pointer]:
+              - /url: plugin-install.php
+          - listitem [ref=f2e133]:
+            - link "Редактор плагинов" [ref=f2e134] [cursor=pointer]:
+              - /url: plugin-editor.php
+      - listitem [ref=f2e135]:
+        - link "Пользователи" [ref=f2e136] [cursor=pointer]:
+          - /url: users.php
+          - generic [aria-hidden] [ref=f2e137]: 
+        - list [ref=f2e139]:
+          - listitem [ref=f2e140]:
+            - link "Все пользователи" [ref=f2e141] [cursor=pointer]:
+              - /url: users.php
+          - listitem [ref=f2e142]:
+            - link "Добавить пользователя" [ref=f2e143] [cursor=pointer]:
+              - /url: user-new.php
+          - listitem [ref=f2e144]:
+            - link "Профиль" [ref=f2e145] [cursor=pointer]:
+              - /url: profile.php
+      - listitem [ref=f2e146]:
+        - link "Инструменты" [ref=f2e147] [cursor=pointer]:
+          - /url: tools.php
+          - generic [aria-hidden] [ref=f2e148]: 
+        - list [ref=f2e150]:
+          - listitem [ref=f2e151]:
+            - link "Доступные инструменты" [ref=f2e152] [cursor=pointer]:
+              - /url: tools.php
+          - listitem [ref=f2e153]:
+            - link "Импорт" [ref=f2e154] [cursor=pointer]:
+              - /url: import.php
+          - listitem [ref=f2e155]:
+            - link "Экспорт" [ref=f2e156] [cursor=pointer]:
+              - /url: export.php
+          - listitem [ref=f2e157]:
+            - link "Здоровье сайта 3" [ref=f2e158] [cursor=pointer]:
+              - /url: site-health.php
+              - text: Здоровье сайта
+              - generic [ref=f2e159]: "3"
+          - listitem [ref=f2e160]:
+            - link "Экспорт персональных данных" [ref=f2e161] [cursor=pointer]:
+              - /url: export-personal-data.php
+          - listitem [ref=f2e162]:
+            - link "Удаление персональных данных" [ref=f2e163] [cursor=pointer]:
+              - /url: erase-personal-data.php
+          - listitem [ref=f2e164]:
+            - link "Better Search Replace" [ref=f2e165] [cursor=pointer]:
+              - /url: tools.php?page=better-search-replace
+      - listitem [ref=f2e166]:
+        - link "All-in-One WP Migration" [ref=f2e167] [cursor=pointer]:
+          - /url: admin.php?page=ai1wm_export
+        - list [ref=f2e170]:
+          - listitem [ref=f2e171]:
+            - link "Экспорт" [ref=f2e172] [cursor=pointer]:
+              - /url: admin.php?page=ai1wm_export
+          - listitem [ref=f2e173]:
+            - link "Импорт" [ref=f2e174] [cursor=pointer]:
+              - /url: admin.php?page=ai1wm_import
+          - listitem [ref=f2e175]:
+            - link "Резервные копии" [ref=f2e176] [cursor=pointer]:
+              - /url: admin.php?page=ai1wm_backups
+          - listitem [ref=f2e177]:
+            - link "Сбросить хаб Premium" [ref=f2e178] [cursor=pointer]:
+              - /url: admin.php?page=ai1wm_reset
+              - text: Сбросить хаб
+              - generic [ref=f2e179]: Premium
+          - listitem [ref=f2e180]:
+            - link "Расписания Premium" [ref=f2e181] [cursor=pointer]:
+              - /url: admin.php?page=ai1wm_schedules
+              - text: Расписания
+              - generic [ref=f2e182]: Premium
+      - listitem [ref=f2e183]:
+        - link "Настройки" [ref=f2e184] [cursor=pointer]:
+          - /url: options-general.php
+          - generic [aria-hidden] [ref=f2e185]: 
+        - list [ref=f2e187]:
+          - listitem [ref=f2e188]:
+            - link "Общие" [ref=f2e189] [cursor=pointer]:
+              - /url: options-general.php
+          - listitem [ref=f2e190]:
+            - link "Подключения" [ref=f2e191] [cursor=pointer]:
+              - /url: options-connectors.php
+          - listitem [ref=f2e192]:
+            - link "Написание" [ref=f2e193] [cursor=pointer]:
+              - /url: options-writing.php
+          - listitem [ref=f2e194]:
+            - link "Чтение" [ref=f2e195] [cursor=pointer]:
+              - /url: options-reading.php
+          - listitem [ref=f2e196]:
+            - link "Обсуждение" [ref=f2e197] [cursor=pointer]:
+              - /url: options-discussion.php
+          - listitem [ref=f2e198]:
+            - link "Медиафайлы" [ref=f2e199] [cursor=pointer]:
+              - /url: options-media.php
+          - listitem [ref=f2e200]:
+            - link "Постоянные ссылки" [ref=f2e201] [cursor=pointer]:
+              - /url: options-permalink.php
+          - listitem [ref=f2e202]:
+            - link "Приватность" [ref=f2e203] [cursor=pointer]:
+              - /url: options-privacy.php
+          - listitem [ref=f2e204]:
+            - link "SVG Support" [ref=f2e205] [cursor=pointer]:
+              - /url: options-general.php?page=svg-support
+          - listitem [ref=f2e206]:
+            - link "Cyr To Lat" [ref=f2e207] [cursor=pointer]:
+              - /url: options-general.php?page=cyr-to-lat
+          - listitem [ref=f2e208]:
+            - link "Yandex SmartCaptcha" [ref=f2e209] [cursor=pointer]:
+              - /url: options-general.php?page=aioysc-settings
+      - listitem [ref=f2e210]:
+        - link "ACF" [ref=f2e211] [cursor=pointer]:
+          - /url: edit.php?post_type=acf-field-group
+          - generic [aria-hidden] [ref=f2e212]: 
+        - list [ref=f2e214]:
+          - listitem [ref=f2e215]:
+            - link "Группы полей" [ref=f2e216] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-field-group
+          - listitem [ref=f2e217]:
+            - link "Типы записей" [ref=f2e218] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-post-type
+          - listitem [ref=f2e219]:
+            - link "Таксономии" [ref=f2e220] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-taxonomy
+          - listitem [ref=f2e221]:
+            - link "Страницы настроек" [ref=f2e222] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-ui-options-page
+          - listitem [ref=f2e223]:
+            - link "Инструменты" [ref=f2e224] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-field-group&page=acf-tools
+          - listitem [ref=f2e225]:
+            - link "Обновления" [ref=f2e226] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-field-group&page=acf-settings-updates
+      - listitem [ref=f2e227]:
+        - link "Глобальные настройки" [ref=f2e228] [cursor=pointer]:
+          - /url: admin.php?page=global-settings
+          - generic [aria-hidden] [ref=f2e229]: 
+      - listitem [aria-hidden] [ref=f2e231]
+      - listitem [ref=f2e233]:
+        - link "Post SMTP" [ref=f2e234] [cursor=pointer]:
+          - /url: admin.php?page=postman
+          - generic [aria-hidden] [ref=f2e235]: 
+        - list [ref=f2e237]:
+          - listitem [ref=f2e238]:
+            - link "Dashboard" [ref=f2e239] [cursor=pointer]:
+              - /url: admin.php?page=postman
+          - listitem [ref=f2e240]:
+            - link "Журнал почты" [ref=f2e241] [cursor=pointer]:
+              - /url: admin.php?page=postman_email_log
+          - listitem [ref=f2e242]:
+            - link "Мобильное приложение  Добавить" [ref=f2e243] [cursor=pointer]:
+              - /url: http://dev.site02.loc/wp-admin/admin.php?page=postman/configuration#mobile-app
+              - text: Мобильное приложение
+              - generic [ref=f2e244]: 
+              - generic [ref=f2e245]: Добавить
+          - listitem [ref=f2e246]:
+            - link "Настройки" [ref=f2e247] [cursor=pointer]:
+              - /url: admin.php?page=postman/configuration
+          - listitem [ref=f2e248]:
+            - link " Расширения" [ref=f2e249] [cursor=pointer]:
+              - /url: admin.php?page=extensions
+              - generic [ref=f2e250]: 
+              - text: Расширения
+          - listitem [ref=f2e251]:
+            - link "Контакты" [ref=f2e252] [cursor=pointer]:
+              - /url: https://wp.freemius.com/contact/?page=aioysc-settings&plugin_id=10461&plugin_public_key=pk_28fcefa3d0ae86f8cdf6b7f71c0cc&plugin_version=3.9.1&wp_login_url=http%3A%2F%2Fdev.site02.loc%2Fwp-login.php&site_url=http%3A%2F%2Fdev.site02.loc&is_standalone=true&parent_url=http%3A%2F%2Fdev.site02.loc%2Fwp-admin%2Fwp-admin%2Foptions-general.php%3Fpage%3Daioysc-settings
+          - listitem [ref=f2e253]:
+            - link "Форум поддержки" [ref=f2e254] [cursor=pointer]:
+              - /url: https://wordpress.org/support/plugin/post-smtp
+      - listitem [ref=f2e255]:
+        - button "Свернуть главное меню" [expanded] [ref=f2e256] [cursor=pointer]:
+          - generic [ref=f2e258]: Свернуть меню
+  - generic [ref=f2e259]:
+    - generic [ref=f2e260]:
+      - navigation "Верхняя панель":
+        - menu:
+          - group [ref=f2e261]:
+            - menuitem "О WordPress" [ref=f2e262] [cursor=pointer]
+          - group [ref=f2e265]:
+            - menuitem "Каталог франшиз 2026 — проверенные франш…" [ref=f2e266] [cursor=pointer]
+          - group [ref=f2e267]:
+            - menuitem "Доступно 9 обновлений" [ref=f2e268] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f2e270]: "9"
+          - group [ref=f2e272]:
+            - menuitem "Ctrl+K Открыть палитру команд" [ref=f2e273] [cursor=pointer]:
+              - generic [ref=f2e275]:
+                - text: Ctrl+K
+                - generic [ref=f2e276]: Открыть палитру команд
+          - group [ref=f2e277]:
+            - menuitem "0 комментариев ждут одобрения" [ref=f2e278] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f2e280]: "0"
+          - group [ref=f2e282]:
+            - menuitem "Добавить" [ref=f2e283] [cursor=pointer]
+        - menu [ref=f2e286]:
+          - group [ref=f2e287]:
+            - menuitem "Привет, temp" [ref=f2e288] [cursor=pointer]
+    - main [ref=f2e289]:
+      - generic [ref=f2e291]:
+        - heading "All-in-One Yandex SmartCaptcha" [level=1] [ref=f2e292]
+        - paragraph [ref=f2e294]:
+          - button "Save" [ref=f2e295] [cursor=pointer]
+        - separator [ref=f2e296]
+        - heading "Theme Usage" [level=3] [ref=f2e297]
+        - paragraph [ref=f2e298]: "Add the following to your AJAX form handler:"
+        - code [ref=f2e300]: "if (class_exists('AIOYSC\\Core') && !AIOYSC\\Core::verify_token()) { wp_send_json_error(['message' => 'Captcha verification failed.']); wp_die(); }"
+        - paragraph [ref=f2e301]: Contact Form 7 integration is automatic — the wpcf7_spam filter is loaded when the plugin is active.
+  - contentinfo [ref=f2e302]:
+    - paragraph [ref=f2e303]:
+      - generic [ref=f2e304]:
+        - text: Спасибо вам за творчество с
+        - link "WordPress" [ref=f2e305] [cursor=pointer]:
+          - /url: https://ru.wordpress.org/
+        - text: .
+    - paragraph [ref=f2e306]: Версия 7.1

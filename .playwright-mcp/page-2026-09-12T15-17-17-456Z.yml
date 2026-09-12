@@ -1,0 +1,563 @@
+- generic [ref=f1e2]:
+  - navigation "Главное меню":
+    - link "Перейти к основному содержимому" [ref=f1e3] [cursor=pointer]:
+      - /url: "#wpbody-content"
+    - link "Перейти к верхней панели" [ref=f1e4] [cursor=pointer]:
+      - /url: "#wp-toolbar"
+    - list [ref=f1e7]:
+      - listitem [ref=f1e8]:
+        - link "Консоль" [ref=f1e9] [cursor=pointer]:
+          - /url: index.php
+          - generic [aria-hidden] [ref=f1e10]: 
+        - list [ref=f1e12]:
+          - listitem [ref=f1e13]:
+            - link "Главная" [ref=f1e14] [cursor=pointer]:
+              - /url: index.php
+          - listitem [ref=f1e15]:
+            - link "Обновления 9" [ref=f1e16] [cursor=pointer]:
+              - /url: update-core.php
+              - text: Обновления
+              - generic [ref=f1e17]: "9"
+      - listitem [aria-hidden] [ref=f1e18]
+      - listitem [ref=f1e20]:
+        - link "Записи" [ref=f1e21] [cursor=pointer]:
+          - /url: edit.php
+          - generic [aria-hidden] [ref=f1e22]: 
+        - list [ref=f1e24]:
+          - listitem [ref=f1e25]:
+            - link "Все записи" [ref=f1e26] [cursor=pointer]:
+              - /url: edit.php
+          - listitem [ref=f1e27]:
+            - link "Добавить запись" [ref=f1e28] [cursor=pointer]:
+              - /url: post-new.php
+          - listitem [ref=f1e29]:
+            - link "Рубрики" [ref=f1e30] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=category
+          - listitem [ref=f1e31]:
+            - link "Метки" [ref=f1e32] [cursor=pointer]:
+              - /url: edit-tags.php?taxonomy=post_tag
+      - listitem [ref=f1e33]:
+        - link "Медиафайлы" [ref=f1e34] [cursor=pointer]:
+          - /url: upload.php
+          - generic [aria-hidden] [ref=f1e35]: 
+        - list [ref=f1e37]:
+          - listitem [ref=f1e38]:
+            - link "Медиатека" [ref=f1e39] [cursor=pointer]:
+              - /url: upload.php
+          - listitem [ref=f1e40]:
+            - link "Добавить медиафайл" [ref=f1e41] [cursor=pointer]:
+              - /url: media-new.php
+      - listitem [ref=f1e42]:
+        - link "Страницы" [ref=f1e43] [cursor=pointer]:
+          - /url: edit.php?post_type=page
+          - generic [aria-hidden] [ref=f1e44]: 
+        - list [ref=f1e46]:
+          - listitem [ref=f1e47]:
+            - link "Все страницы" [ref=f1e48] [cursor=pointer]:
+              - /url: edit.php?post_type=page
+          - listitem [ref=f1e49]:
+            - link "Добавить страницу" [ref=f1e50] [cursor=pointer]:
+              - /url: post-new.php?post_type=page
+      - listitem [ref=f1e51]:
+        - link "SheetBridge" [ref=f1e52] [cursor=pointer]:
+          - /url: edit.php?post_type=sheet_bridge
+          - generic [aria-hidden] [ref=f1e53]: 
+        - list [ref=f1e55]:
+          - listitem [ref=f1e56]:
+            - link "All Sheet Bridges" [ref=f1e57] [cursor=pointer]:
+              - /url: edit.php?post_type=sheet_bridge
+          - listitem [ref=f1e58]:
+            - link "Add New Sheet Bridge" [ref=f1e59] [cursor=pointer]:
+              - /url: post-new.php?post_type=sheet_bridge
+      - listitem [ref=f1e60]:
+        - link "Комментарии" [ref=f1e61] [cursor=pointer]:
+          - /url: edit-comments.php
+          - generic [aria-hidden] [ref=f1e62]: 
+      - listitem [ref=f1e64]:
+        - link "Flamingo" [ref=f1e65] [cursor=pointer]:
+          - /url: admin.php?page=flamingo
+          - generic [aria-hidden] [ref=f1e66]: 
+        - list [ref=f1e68]:
+          - listitem [ref=f1e69]:
+            - link "Адресная книга" [ref=f1e70] [cursor=pointer]:
+              - /url: admin.php?page=flamingo
+          - listitem [ref=f1e71]:
+            - link "Входящие сообщения" [ref=f1e72] [cursor=pointer]:
+              - /url: admin.php?page=flamingo_inbound
+      - listitem [ref=f1e73]:
+        - link "Contact Form 7" [ref=f1e74] [cursor=pointer]:
+          - /url: admin.php?page=wpcf7
+          - generic [aria-hidden] [ref=f1e75]: 
+        - list [ref=f1e77]:
+          - listitem [ref=f1e78]:
+            - link "Контактные формы" [ref=f1e79] [cursor=pointer]:
+              - /url: admin.php?page=wpcf7
+          - listitem [ref=f1e80]:
+            - link "Добавить контактную форму" [ref=f1e81] [cursor=pointer]:
+              - /url: admin.php?page=wpcf7-new
+          - listitem [ref=f1e82]:
+            - link "Интеграция" [ref=f1e83] [cursor=pointer]:
+              - /url: admin.php?page=wpcf7-integration
+      - listitem [ref=f1e84]:
+        - link "Ghost Kit" [ref=f1e85] [cursor=pointer]:
+          - /url: admin.php?page=ghostkit
+        - list [ref=f1e88]:
+          - listitem [ref=f1e89]:
+            - link "Блоки" [ref=f1e90] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit
+          - listitem [ref=f1e91]:
+            - link "Значки" [ref=f1e92] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit&sub_page=icons
+          - listitem [ref=f1e93]:
+            - link "Типографика" [ref=f1e94] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit&sub_page=typography
+          - listitem [ref=f1e95]:
+            - link "Шрифты" [ref=f1e96] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit&sub_page=fonts
+          - listitem [ref=f1e97]:
+            - link "Breakpoints" [ref=f1e98] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit&sub_page=breakpoints
+          - listitem [ref=f1e99]:
+            - link "CSS и JavaScript" [ref=f1e100] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit&sub_page=css_js
+          - listitem [ref=f1e101]:
+            - link " Получить PRO" [ref=f1e102] [cursor=pointer]:
+              - /url: admin.php?page=ghostkit_go_pro
+              - generic [ref=f1e103]: 
+              - text: Получить PRO
+      - listitem [aria-hidden] [ref=f1e104]
+      - listitem [ref=f1e106]:
+        - link "Внешний вид" [ref=f1e107] [cursor=pointer]:
+          - /url: themes.php
+          - generic [aria-hidden] [ref=f1e108]: 
+        - list [ref=f1e110]:
+          - listitem [ref=f1e111]:
+            - link "Темы" [ref=f1e112] [cursor=pointer]:
+              - /url: themes.php
+          - listitem [ref=f1e113]:
+            - link "Паттерны" [ref=f1e114] [cursor=pointer]:
+              - /url: site-editor.php?p=/pattern
+          - listitem [ref=f1e115]:
+            - link "Настроить" [ref=f1e116] [cursor=pointer]:
+              - /url: customize.php?return=%2Fwp-admin%2F
+          - listitem [ref=f1e117]:
+            - link "Шрифты" [ref=f1e118] [cursor=pointer]:
+              - /url: font-library.php
+          - listitem [ref=f1e119]:
+            - link "Меню" [ref=f1e120] [cursor=pointer]:
+              - /url: nav-menus.php
+          - listitem [ref=f1e121]:
+            - link "Редактор тем" [ref=f1e122] [cursor=pointer]:
+              - /url: theme-editor.php
+      - listitem [ref=f1e123]:
+        - link "Плагины 9" [ref=f1e124] [cursor=pointer]:
+          - /url: plugins.php
+          - generic [aria-hidden] [ref=f1e125]: 
+          - generic [ref=f1e126]:
+            - text: Плагины
+            - generic [ref=f1e127]: "9"
+        - list [ref=f1e128]:
+          - listitem [ref=f1e129]:
+            - link "Установленные" [ref=f1e130] [cursor=pointer]:
+              - /url: plugins.php
+          - listitem [ref=f1e131]:
+            - link "Добавить плагин" [ref=f1e132] [cursor=pointer]:
+              - /url: plugin-install.php
+          - listitem [ref=f1e133]:
+            - link "Редактор плагинов" [ref=f1e134] [cursor=pointer]:
+              - /url: plugin-editor.php
+      - listitem [ref=f1e135]:
+        - link "Пользователи" [ref=f1e136] [cursor=pointer]:
+          - /url: users.php
+          - generic [aria-hidden] [ref=f1e137]: 
+        - list [ref=f1e139]:
+          - listitem [ref=f1e140]:
+            - link "Все пользователи" [ref=f1e141] [cursor=pointer]:
+              - /url: users.php
+          - listitem [ref=f1e142]:
+            - link "Добавить пользователя" [ref=f1e143] [cursor=pointer]:
+              - /url: user-new.php
+          - listitem [ref=f1e144]:
+            - link "Профиль" [ref=f1e145] [cursor=pointer]:
+              - /url: profile.php
+      - listitem [ref=f1e146]:
+        - link "Инструменты" [ref=f1e147] [cursor=pointer]:
+          - /url: tools.php
+          - generic [aria-hidden] [ref=f1e148]: 
+        - list [ref=f1e150]:
+          - listitem [ref=f1e151]:
+            - link "Доступные инструменты" [ref=f1e152] [cursor=pointer]:
+              - /url: tools.php
+          - listitem [ref=f1e153]:
+            - link "Импорт" [ref=f1e154] [cursor=pointer]:
+              - /url: import.php
+          - listitem [ref=f1e155]:
+            - link "Экспорт" [ref=f1e156] [cursor=pointer]:
+              - /url: export.php
+          - listitem [ref=f1e157]:
+            - link "Здоровье сайта 3" [ref=f1e158] [cursor=pointer]:
+              - /url: site-health.php
+              - text: Здоровье сайта
+              - generic [ref=f1e159]: "3"
+          - listitem [ref=f1e160]:
+            - link "Экспорт персональных данных" [ref=f1e161] [cursor=pointer]:
+              - /url: export-personal-data.php
+          - listitem [ref=f1e162]:
+            - link "Удаление персональных данных" [ref=f1e163] [cursor=pointer]:
+              - /url: erase-personal-data.php
+          - listitem [ref=f1e164]:
+            - link "Better Search Replace" [ref=f1e165] [cursor=pointer]:
+              - /url: tools.php?page=better-search-replace
+      - listitem [ref=f1e166]:
+        - link "All-in-One WP Migration" [ref=f1e167] [cursor=pointer]:
+          - /url: admin.php?page=ai1wm_export
+        - list [ref=f1e170]:
+          - listitem [ref=f1e171]:
+            - link "Экспорт" [ref=f1e172] [cursor=pointer]:
+              - /url: admin.php?page=ai1wm_export
+          - listitem [ref=f1e173]:
+            - link "Импорт" [ref=f1e174] [cursor=pointer]:
+              - /url: admin.php?page=ai1wm_import
+          - listitem [ref=f1e175]:
+            - link "Резервные копии" [ref=f1e176] [cursor=pointer]:
+              - /url: admin.php?page=ai1wm_backups
+          - listitem [ref=f1e177]:
+            - link "Сбросить хаб Premium" [ref=f1e178] [cursor=pointer]:
+              - /url: admin.php?page=ai1wm_reset
+              - text: Сбросить хаб
+              - generic [ref=f1e179]: Premium
+          - listitem [ref=f1e180]:
+            - link "Расписания Premium" [ref=f1e181] [cursor=pointer]:
+              - /url: admin.php?page=ai1wm_schedules
+              - text: Расписания
+              - generic [ref=f1e182]: Premium
+      - listitem [ref=f1e183]:
+        - link "Настройки" [ref=f1e184] [cursor=pointer]:
+          - /url: options-general.php
+          - generic [aria-hidden] [ref=f1e185]: 
+        - list [ref=f1e187]:
+          - listitem [ref=f1e188]:
+            - link "Общие" [ref=f1e189] [cursor=pointer]:
+              - /url: options-general.php
+          - listitem [ref=f1e190]:
+            - link "Подключения" [ref=f1e191] [cursor=pointer]:
+              - /url: options-connectors.php
+          - listitem [ref=f1e192]:
+            - link "Написание" [ref=f1e193] [cursor=pointer]:
+              - /url: options-writing.php
+          - listitem [ref=f1e194]:
+            - link "Чтение" [ref=f1e195] [cursor=pointer]:
+              - /url: options-reading.php
+          - listitem [ref=f1e196]:
+            - link "Обсуждение" [ref=f1e197] [cursor=pointer]:
+              - /url: options-discussion.php
+          - listitem [ref=f1e198]:
+            - link "Медиафайлы" [ref=f1e199] [cursor=pointer]:
+              - /url: options-media.php
+          - listitem [ref=f1e200]:
+            - link "Постоянные ссылки" [ref=f1e201] [cursor=pointer]:
+              - /url: options-permalink.php
+          - listitem [ref=f1e202]:
+            - link "Приватность" [ref=f1e203] [cursor=pointer]:
+              - /url: options-privacy.php
+          - listitem [ref=f1e204]:
+            - link "SVG Support" [ref=f1e205] [cursor=pointer]:
+              - /url: options-general.php?page=svg-support
+          - listitem [ref=f1e206]:
+            - link "Cyr To Lat" [ref=f1e207] [cursor=pointer]:
+              - /url: options-general.php?page=cyr-to-lat
+          - listitem [ref=f1e208]:
+            - link "Yandex SmartCaptcha" [ref=f1e209] [cursor=pointer]:
+              - /url: options-general.php?page=aioysc-settings
+      - listitem [ref=f1e210]:
+        - link "ACF" [ref=f1e211] [cursor=pointer]:
+          - /url: edit.php?post_type=acf-field-group
+          - generic [aria-hidden] [ref=f1e212]: 
+        - list [ref=f1e214]:
+          - listitem [ref=f1e215]:
+            - link "Группы полей" [ref=f1e216] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-field-group
+          - listitem [ref=f1e217]:
+            - link "Типы записей" [ref=f1e218] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-post-type
+          - listitem [ref=f1e219]:
+            - link "Таксономии" [ref=f1e220] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-taxonomy
+          - listitem [ref=f1e221]:
+            - link "Страницы настроек" [ref=f1e222] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-ui-options-page
+          - listitem [ref=f1e223]:
+            - link "Инструменты" [ref=f1e224] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-field-group&page=acf-tools
+          - listitem [ref=f1e225]:
+            - link "Обновления" [ref=f1e226] [cursor=pointer]:
+              - /url: edit.php?post_type=acf-field-group&page=acf-settings-updates
+      - listitem [ref=f1e227]:
+        - link "Глобальные настройки" [ref=f1e228] [cursor=pointer]:
+          - /url: admin.php?page=global-settings
+          - generic [aria-hidden] [ref=f1e229]: 
+      - listitem [aria-hidden] [ref=f1e231]
+      - listitem [ref=f1e233]:
+        - link "Post SMTP" [ref=f1e234] [cursor=pointer]:
+          - /url: admin.php?page=postman
+          - generic [aria-hidden] [ref=f1e235]: 
+        - list [ref=f1e237]:
+          - listitem [ref=f1e238]:
+            - link "Dashboard" [ref=f1e239] [cursor=pointer]:
+              - /url: admin.php?page=postman
+          - listitem [ref=f1e240]:
+            - link "Журнал почты" [ref=f1e241] [cursor=pointer]:
+              - /url: admin.php?page=postman_email_log
+          - listitem [ref=f1e242]:
+            - link "Мобильное приложение  Добавить" [ref=f1e243] [cursor=pointer]:
+              - /url: http://dev.site02.loc/wp-admin/admin.php?page=postman/configuration#mobile-app
+              - text: Мобильное приложение
+              - generic [ref=f1e244]: 
+              - generic [ref=f1e245]: Добавить
+          - listitem [ref=f1e246]:
+            - link "Настройки" [ref=f1e247] [cursor=pointer]:
+              - /url: admin.php?page=postman/configuration
+          - listitem [ref=f1e248]:
+            - link " Расширения" [ref=f1e249] [cursor=pointer]:
+              - /url: admin.php?page=extensions
+              - generic [ref=f1e250]: 
+              - text: Расширения
+          - listitem [ref=f1e251]:
+            - link "Контакты" [ref=f1e252] [cursor=pointer]:
+              - /url: https://wp.freemius.com/contact/?plugin_id=10461&plugin_public_key=pk_28fcefa3d0ae86f8cdf6b7f71c0cc&plugin_version=3.9.1&wp_login_url=http%3A%2F%2Fdev.site02.loc%2Fwp-login.php&site_url=http%3A%2F%2Fdev.site02.loc&is_standalone=true&parent_url=http%3A%2F%2Fdev.site02.loc%2Fwp-admin%2Fwp-admin%2F
+          - listitem [ref=f1e253]:
+            - link "Форум поддержки" [ref=f1e254] [cursor=pointer]:
+              - /url: https://wordpress.org/support/plugin/post-smtp
+      - listitem [ref=f1e255]:
+        - button "Свернуть главное меню" [expanded] [ref=f1e256] [cursor=pointer]:
+          - generic [ref=f1e258]: Свернуть меню
+  - generic [ref=f1e259]:
+    - generic [ref=f1e260]:
+      - navigation "Верхняя панель":
+        - menu:
+          - group [ref=f1e261]:
+            - menuitem "О WordPress" [ref=f1e262] [cursor=pointer]
+          - group [ref=f1e265]:
+            - menuitem "Каталог франшиз 2026 — проверенные франш…" [ref=f1e266] [cursor=pointer]
+          - group [ref=f1e267]:
+            - menuitem "Доступно 9 обновлений" [ref=f1e268] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f1e270]: "9"
+          - group [ref=f1e272]:
+            - menuitem "Ctrl+K Открыть палитру команд" [ref=f1e273] [cursor=pointer]:
+              - generic [ref=f1e275]:
+                - text: Ctrl+K
+                - generic [ref=f1e276]: Открыть палитру команд
+          - group [ref=f1e277]:
+            - menuitem "0 комментариев ждут одобрения" [ref=f1e278] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f1e280]: "0"
+          - group [ref=f1e282]:
+            - menuitem "Добавить" [ref=f1e283] [cursor=pointer]
+        - menu [ref=f1e286]:
+          - group [ref=f1e287]:
+            - menuitem "Привет, temp" [ref=f1e288] [cursor=pointer]
+    - main [ref=f1e289]:
+      - generic [ref=f1e290]:
+        - generic [ref=f1e291]:
+          - button "Настройки экрана" [ref=f1e293] [cursor=pointer]
+          - button "Помощь" [ref=f1e295] [cursor=pointer]
+        - generic [ref=f1e296]:
+          - heading "Консоль" [level=1] [ref=f1e297]
+          - text: 
+          - generic [ref=f1e299]:
+            - generic [ref=f1e301]:
+              - region "Состояние здоровья сайта" [ref=f1e302]:
+                - generic [ref=f1e303]:
+                  - heading "Состояние здоровья сайта" [level=2] [ref=f1e304]
+                  - generic [ref=f1e305]:
+                    - button "Переместить вверх" [disabled] [ref=f1e307]
+                    - button "Переместить вниз" [ref=f1e311] [cursor=pointer]
+                    - button "Показать или скрыть панель" [expanded] [ref=f1e315] [cursor=pointer]
+                - generic [ref=f1e319]:
+                  - generic [ref=f1e320]: Требует улучшения
+                  - generic [ref=f1e326]:
+                    - paragraph [ref=f1e327]: На вашем сайте есть критические проблемы, которые стоит решить как можно быстрее, для улучшения безопасности и производительности вашего сайта.
+                    - paragraph [ref=f1e328]:
+                      - text: Обратите внимание на
+                      - strong [ref=f1e329]: 7 элементов
+                      - text: на экране
+                      - link "«Здоровье сайта»" [ref=f1e330] [cursor=pointer]:
+                        - /url: http://dev.site02.loc/wp-admin/site-health.php
+                      - text: .
+              - region "На виду" [ref=f1e331]:
+                - generic [ref=f1e332]:
+                  - heading "На виду" [level=2] [ref=f1e333]
+                  - generic [ref=f1e334]:
+                    - button "Переместить вверх" [ref=f1e336] [cursor=pointer]
+                    - button "Переместить вниз" [ref=f1e340] [cursor=pointer]
+                    - button "Показать или скрыть панель" [expanded] [ref=f1e344] [cursor=pointer]
+                - generic [ref=f1e348]:
+                  - list [ref=f1e349]:
+                    - listitem [ref=f1e350]:
+                      - link "27 опубликованных записей" [ref=f1e351] [cursor=pointer]:
+                        - /url: http://dev.site02.loc/wp-admin/edit.php?post_status=publish&post_type=post
+                    - listitem [ref=f1e352]:
+                      - link "6 опубликованных страниц" [ref=f1e353] [cursor=pointer]:
+                        - /url: http://dev.site02.loc/wp-admin/edit.php?post_status=publish&post_type=page
+                  - paragraph [ref=f1e354]:
+                    - generic [ref=f1e355]:
+                      - text: WordPress 7.1 с темой оформления
+                      - link "FRANCHBIZ" [ref=f1e356] [cursor=pointer]:
+                        - /url: themes.php
+                      - text: .
+              - region "Активность" [ref=f1e357]:
+                - generic [ref=f1e358]:
+                  - heading "Активность" [level=2] [ref=f1e359]
+                  - generic [ref=f1e360]:
+                    - button "Переместить вверх" [ref=f1e362] [cursor=pointer]
+                    - button "Переместить вниз" [ref=f1e366] [cursor=pointer]
+                    - button "Показать или скрыть панель" [expanded] [ref=f1e370] [cursor=pointer]
+                - generic [ref=f1e375]:
+                  - heading "Недавно опубликованы" [level=3] [ref=f1e376]
+                  - list [ref=f1e377]:
+                    - listitem [ref=f1e378]:
+                      - generic [ref=f1e379]: 07.08.2026, 20:40
+                      - link "Редактировать «ExtraBriz»" [ref=f1e380] [cursor=pointer]:
+                        - /url: http://dev.site02.loc/wp-admin/post.php?post=63716&action=edit
+                        - text: ExtraBriz
+                    - listitem [ref=f1e381]:
+                      - generic [ref=f1e382]: 07.08.2026, 17:49
+                      - link "Редактировать «Промптер»" [ref=f1e383] [cursor=pointer]:
+                        - /url: http://dev.site02.loc/wp-admin/post.php?post=63709&action=edit
+                        - text: Промптер
+                    - listitem [ref=f1e384]:
+                      - generic [ref=f1e385]: 30.07.2026, 19:53
+                      - link "Редактировать «Франч Брокер»" [ref=f1e386] [cursor=pointer]:
+                        - /url: http://dev.site02.loc/wp-admin/post.php?post=63690&action=edit
+                        - text: Франч Брокер
+                    - listitem [ref=f1e387]:
+                      - generic [ref=f1e388]: 13.07.2026, 17:40
+                      - link "Редактировать «Папа, ну купи!»" [ref=f1e389] [cursor=pointer]:
+                        - /url: http://dev.site02.loc/wp-admin/post.php?post=63615&action=edit
+                        - text: Папа, ну купи!
+                    - listitem [ref=f1e390]:
+                      - generic [ref=f1e391]: 03.07.2026, 16:19
+                      - link "Редактировать «Упаковка вашей франшизы»" [ref=f1e392] [cursor=pointer]:
+                        - /url: http://dev.site02.loc/wp-admin/post.php?post=63577&action=edit
+                        - text: Упаковка вашей франшизы
+              - region "Postman SMTP" [ref=f1e393]:
+                - generic [ref=f1e394]:
+                  - heading "Postman SMTP" [level=2] [ref=f1e395]
+                  - generic [ref=f1e396]:
+                    - button "Переместить вверх" [ref=f1e398] [cursor=pointer]
+                    - button "Переместить вниз" [ref=f1e402] [cursor=pointer]
+                    - button "Показать или скрыть панель" [expanded] [ref=f1e406] [cursor=pointer]
+                - generic [ref=f1e409]:
+                  - paragraph [ref=f1e410]:  Postman настроен и доставил 633 письма
+                  - paragraph [ref=f1e411]: Postman будет посылать письма через 🔓SMTP на localhost:1025 используя Нет авторизацию.
+                  - paragraph [ref=f1e412]:
+                    - link "Журнал почты" [ref=f1e413] [cursor=pointer]:
+                      - /url: http://dev.site02.loc/wp-admin/admin.php?page=postman_email_log
+                    - text: "|"
+                    - link "Настройки" [ref=f1e414] [cursor=pointer]:
+                      - /url: http://dev.site02.loc/wp-admin/admin.php?page=postman
+              - region "Postman SMTP Stats" [ref=f1e415]:
+                - generic [ref=f1e416]:
+                  - heading "Postman SMTP Stats" [level=2] [ref=f1e417]
+                  - generic [ref=f1e418]:
+                    - button "Переместить вверх" [ref=f1e420] [cursor=pointer]
+                    - button "Переместить вниз" [ref=f1e424] [cursor=pointer]
+                    - button "Показать или скрыть панель" [expanded] [ref=f1e428] [cursor=pointer]
+                - generic [ref=f1e432]:
+                  - generic [ref=f1e437]:
+                    - link "" [ref=f1e438] [cursor=pointer]:
+                      - /url: "#"
+                    - heading "To get Graphs Insights" [level=2] [ref=f1e440]
+                    - paragraph [ref=f1e441]:
+                      - link "Upgrade to Post SMTP Pro " [ref=f1e442] [cursor=pointer]:
+                        - /url: https://postmansmtp.com/pricing/?utm_source=plugin&utm_medium=wp_dashboard_widget
+                        - text: Upgrade to Post SMTP Pro
+                        - generic [ref=f1e443]: 
+                  - generic [ref=f1e444]:
+                    - generic [ref=f1e445]:
+                      - combobox "Выбрать тип email" [ref=f1e446] [cursor=pointer]:
+                        - option "All Emails" [selected]
+                        - option "Отосланная почта" [disabled]
+                        - option "Неудачные Emails" [disabled]
+                      - paragraph [ref=f1e447]:
+                        - link "View Full Log" [ref=f1e448] [cursor=pointer]:
+                          - /url: http://dev.site02.loc/wp-admin/admin.php?page=postman_email_log
+                    - generic [ref=f1e449]:
+                      - combobox "Выбрать временной диапазон" [ref=f1e450] [cursor=pointer]:
+                        - option "Select a timespan" [selected]
+                        - option "Последние 7 дней" [disabled]
+                        - option "Последние 14 дней" [disabled]
+                        - option "Последние 30 дней" [disabled]
+                      - button [ref=f1e452] [cursor=pointer]
+                  - table [ref=f1e456]:
+                    - rowgroup [ref=f1e457]:
+                      - row [ref=f1e458]:
+                        - cell "Значок ячейки таблицы 647 total" [ref=f1e459]:
+                          - generic [ref=f1e460]:
+                            - img "Значок ячейки таблицы" [ref=f1e461]
+                            - generic [ref=f1e462]: 647 total
+                        - cell "Значок ячейки таблицы Sent 636" [ref=f1e463]:
+                          - generic [ref=f1e464]:
+                            - img "Значок ячейки таблицы" [ref=f1e465]
+                            - generic [ref=f1e466]: Sent 636
+                        - cell "Значок ячейки таблицы Failed 11" [ref=f1e467]:
+                          - generic [ref=f1e468]:
+                            - img "Значок ячейки таблицы" [ref=f1e469]
+                            - generic [ref=f1e470]: Failed 11
+                  - paragraph [ref=f1e472]:
+                    - text: Now Post SMTP is available on your mobile device.
+                    - link "Download now" [ref=f1e473] [cursor=pointer]:
+                      - /url: https://postmansmtp.com/post-smtp-mobile-app/
+            - generic [ref=f1e475]:
+              - region "Быстрый черновик Ваши недавние черновики" [ref=f1e476]:
+                - generic [ref=f1e477]:
+                  - heading "Быстрый черновик" [level=2] [ref=f1e478]
+                  - generic [ref=f1e480]:
+                    - button "Переместить вверх" [ref=f1e482] [cursor=pointer]
+                    - button "Переместить вниз" [ref=f1e486] [cursor=pointer]
+                    - button "Показать или скрыть панель" [expanded] [ref=f1e490] [cursor=pointer]
+                - generic [ref=f1e494]:
+                  - generic [ref=f1e495]:
+                    - generic [ref=f1e496]: Заголовок
+                    - textbox "Заголовок" [ref=f1e497]
+                  - generic [ref=f1e498]:
+                    - generic [ref=f1e499]: Содержимое
+                    - textbox "Содержимое" [ref=f1e500]:
+                      - /placeholder: О чём хотите написать?
+                  - paragraph [ref=f1e501]:
+                    - button "Сохранить" [ref=f1e502] [cursor=pointer]
+              - region "Новости и мероприятия WordPress" [ref=f1e503]:
+                - generic [ref=f1e504]:
+                  - heading "Новости и мероприятия WordPress" [level=2] [ref=f1e505]
+                  - generic [ref=f1e506]:
+                    - button "Переместить вверх" [ref=f1e508] [cursor=pointer]
+                    - button "Переместить вниз" [disabled] [ref=f1e512]
+                    - button "Показать или скрыть панель" [expanded] [ref=f1e516] [cursor=pointer]
+                - generic [ref=f1e519]:
+                  - text: 
+                  - paragraph [ref=f1e521]: Загрузка…
+                  - paragraph [ref=f1e522]:
+                    - link "Встречи (откроется в новой вкладке)" [ref=f1e523] [cursor=pointer]:
+                      - /url: https://make.wordpress.org/community/meetups-landing-page
+                      - text: Встречи
+                      - generic [ref=f1e524]: (откроется в новой вкладке)
+                      - generic [aria-hidden] [ref=f1e525]: 
+                    - text: "|"
+                    - link "WordCamp (откроется в новой вкладке)" [ref=f1e526] [cursor=pointer]:
+                      - /url: https://central.wordcamp.org/schedule/
+                      - text: WordCamp
+                      - generic [ref=f1e527]: (откроется в новой вкладке)
+                      - generic [aria-hidden] [ref=f1e528]: 
+                    - text: "|"
+                    - link "Новости (откроется в новой вкладке)" [ref=f1e529] [cursor=pointer]:
+                      - /url: https://ru.wordpress.org/news/
+                      - text: Новости
+                      - generic [ref=f1e530]: (откроется в новой вкладке)
+                      - generic [aria-hidden] [ref=f1e531]: 
+  - contentinfo [ref=f1e532]:
+    - paragraph [ref=f1e533]:
+      - generic [ref=f1e534]:
+        - text: Спасибо вам за творчество с
+        - link "WordPress" [ref=f1e535] [cursor=pointer]:
+          - /url: https://ru.wordpress.org/
+        - text: .
+    - paragraph [ref=f1e536]: Версия 7.1
