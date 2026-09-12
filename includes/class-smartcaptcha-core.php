@@ -13,6 +13,16 @@ class Core {
 		return self::$instance;
 	}
 
+	/**
+	 * Check if the site is running in development mode.
+	 *
+	 * @return bool
+	 */
+	public static function is_dev_mode(): bool {
+		$env = defined( 'WP_ENV' ) ? WP_ENV : '';
+		return in_array( strtolower( $env ), [ 'dev', 'develop', 'development' ], true );
+	}
+
 	private function __construct() {
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 		add_action( 'wp_head', [ $this, 'preconnect' ], 1 );
@@ -66,9 +76,18 @@ class Core {
 	 * @return true if token is valid, false otherwise.
 	 */
 	public static function verify_token(): bool {
+		$dev = self::is_dev_mode();
 		$token = $_POST['smartcaptcha_token'] ?? '';
 
+		if ( $dev ) {
+			error_log( 'SmartCaptcha [DEV]: verify_token() started' );
+			error_log( 'SmartCaptcha [DEV]: token = ' . ( empty( $token ) ? '(empty)' : substr( $token, 0, 20 ) . '...' ) );
+		}
+
 		if ( empty( $token ) ) {
+			if ( $dev ) {
+				error_log( 'SmartCaptcha [DEV]: token is empty — returning false' );
+			}
 			return false;
 		}
 
@@ -81,6 +100,11 @@ class Core {
 		}
 
 		$ip = self::get_client_ip();
+
+		if ( $dev ) {
+			error_log( 'SmartCaptcha [DEV]: client IP = ' . $ip );
+			error_log( 'SmartCaptcha [DEV]: sending validation request to Yandex...' );
+		}
 
 		$response = wp_remote_post( 'https://smartcaptcha.cloud.yandex.ru/validate', [
 			'body'    => wp_json_encode( [
@@ -98,6 +122,12 @@ class Core {
 		}
 
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( $dev ) {
+			error_log( 'SmartCaptcha [DEV]: response status = ' . ( $body['status'] ?? '(not set)' ) );
+			error_log( 'SmartCaptcha [DEV]: verify_token() result = ' . ( isset( $body['status'] ) && $body['status'] === 'ok' ? 'true' : 'false' ) );
+		}
+
 		return isset( $body['status'] ) && $body['status'] === 'ok';
 	}
 
