@@ -1,3 +1,0 @@
-[     316ms] [LOG] JQMIGRATE: Migrate is installed, version 3.4.1 @ http://dev.site02.loc/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1:1
-[   91179ms] [LOG] JQMIGRATE: Migrate is installed, version 3.4.1 @ http://dev.site02.loc/wp-admin/load-scripts.php?c=1&load%5Bchunk_0%5D=jquery-core,jquery-migrate,utils&ver=7.1:4
-[   91599ms] [LOG] chart data updated:  {labels: Array(7), datasets: Array(1)} @ http://dev.site02.loc/wp-content/plugins/post-smtp/Postman/Postman-Controller/assets/js/post-smtp-wp-dashboard.js?ver=3.9.1:160
