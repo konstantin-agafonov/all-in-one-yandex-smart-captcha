@@ -139,11 +139,12 @@ class Core {
     }
 
     /**
-     * Подключение JS SmartCaptcha на фронтенде
+     * Подключение JS SmartCaptcha на фронтенде.
+     * Не подключается если ключ или секрет пусты — форма работает без капчи.
      */
     public function enqueue_assets(): void {
         $settings = get_option('aioysc_settings', []);
-        if (empty($settings['enabled']) || empty($settings['sitekey'])) {
+        if (empty($settings['enabled']) || empty($settings['sitekey']) || empty($settings['secret'])) {
             return;
         }
 
@@ -186,7 +187,7 @@ class Core {
 
         if (empty($secret)) {
             error_log('SmartCaptcha: секретный ключ не задан в настройках плагина');
-            return true; // dev-режим: пропускаем если ключ не задан
+            return false;
         }
 
         $ip = self::get_client_ip();
@@ -497,8 +498,7 @@ defined('ABSPATH') || exit;
 <h3>Использование в теме</h3>
 <p>В обработчике AJAX-формы добавьте:</p>
 <pre><code><?php echo esc_html(
-'require_once ABSPATH . \'wp-content/plugins/all-in-one-yandex-smart-captcha/includes/class-smartcaptcha-core.php\';
-if (!AIOYSC\Core::verify_token()) {
+'if (class_exists(\'AIOYSC\\Core\') && !AIOYSC\Core::verify_token()) {
     wp_send_json_error([\'message\' => \'Проверка защиты не пройдена.\']);
     wp_die();
 }'
@@ -517,43 +517,55 @@ if (!AIOYSC\Core::verify_token()) {
 Sitekey передаётся через `wp_localize_script()` в глобальный объект `smartcaptchaConfig`.
 
 ```js
+function smartCaptchaProcessForm(form) {
+    const existing = form.querySelector('input[name="smartcaptcha_token"]');
+    if (existing) return;
+
+    const container = document.createElement('div');
+    container.className = 'smartcaptcha-container';
+    container.style.display = 'none';
+    form.appendChild(container);
+
+    try {
+        smartcaptcha.render(container, {
+            sitekey: smartcaptchaConfig.sitekey,
+            invisible: true,
+            callback: function (token) {
+                let input = form.querySelector('input[name="smartcaptcha_token"]');
+                if (!input) {
+                    input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'smartcaptcha_token';
+                    form.appendChild(input);
+                }
+                input.value = token;
+            },
+        });
+    } catch (e) {
+        console.warn('SmartCaptcha render error:', e);
+    }
+}
+
 window.onloadSmartcaptcha = function () {
     window.smartcaptchaReady = true;
 
-    var cf7Selector = '.wpcf7-form';
-    var defaultSelector = 'form:not(.wpcf7-form)';
-
-    function processForm(form) {
-        var existing = form.querySelector('input[name="smartcaptcha_token"]');
-        if (existing) return;
-
-        var container = document.createElement('div');
-        container.className = 'smartcaptcha-container';
-        container.style.display = 'none';
-        form.appendChild(container);
-
-        try {
-            smartcaptcha.render(container, {
-                sitekey: smartcaptchaConfig.sitekey,
-                invisible: true,
-                callback: function (token) {
-                    var input = form.querySelector('input[name="smartcaptcha_token"]');
-                    if (!input) {
-                        input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'smartcaptcha_token';
-                        form.appendChild(input);
-                    }
-                    input.value = token;
-                },
-            });
-        } catch (e) {
-            console.warn('SmartCaptcha render error:', e);
-        }
+    if (typeof smartcaptchaConfig === 'undefined' || !smartcaptchaConfig.sitekey) {
+        return;
     }
 
-    document.querySelectorAll(defaultSelector).forEach(processForm);
-    document.querySelectorAll(cf7Selector).forEach(processForm);
+    const cf7Selector = '.wpcf7-form';
+    const defaultSelector = 'form:not(.wpcf7-form)';
+
+    function processAllForms() {
+        document.querySelectorAll(defaultSelector).forEach(smartCaptchaProcessForm);
+        document.querySelectorAll(cf7Selector).forEach(smartCaptchaProcessForm);
+    }
+
+    if (document.readyState === 'complete') {
+        processAllForms();
+    } else {
+        window.addEventListener('load', processAllForms);
+    }
 };
 ```
 
@@ -561,12 +573,12 @@ window.onloadSmartcaptcha = function () {
 
 ## Шаг 6. Интеграция с темой franchbiz
 
-Кастомные AJAX-обработчики темы загружают WordPress через `wp-load.php`, поэтому плагин уже доступен. Достаточно добавить **2 строки** в каждый файл.
+Кастомные AJAX-обработчики темы загружают WordPress через `wp-load.php`, поэтому плагин уже доступен. Достаточно добавить **5 строк** в каждый файл.
 
 ### `ajax/send-presentation.php` — после `require($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php');`
 
 ```php
-if (!AIOYSC\Core::verify_token()) {
+if (class_exists('AIOYSC\\Core') && !AIOYSC\Core::verify_token()) {
     echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
     exit;
 }
@@ -575,7 +587,7 @@ if (!AIOYSC\Core::verify_token()) {
 ### `ajax/send-presentation-channel.php` — после `require`:
 
 ```php
-if (!AIOYSC\Core::verify_token()) {
+if (class_exists('AIOYSC\\Core') && !AIOYSC\Core::verify_token()) {
     echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
     exit;
 }
@@ -584,7 +596,7 @@ if (!AIOYSC\Core::verify_token()) {
 ### `ajax/send-pres-channel_single.php` — после `require`:
 
 ```php
-if (!AIOYSC\Core::verify_token()) {
+if (class_exists('AIOYSC\\Core') && !AIOYSC\Core::verify_token()) {
     echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
     exit;
 }
@@ -627,7 +639,7 @@ JS-код в `public/js/smartcaptcha-front.js` делает следующее:
 | Файл | Описание |
 |------|----------|
 | `all-in-one-yandex-smart-captcha.php` | Главный файл с хедером плагина, константы, подключение классов |
-| `includes/class-smartcaptcha-core.php` | Ядро: `verify_token()` (публичный API), enqueue JS, CF7 фильтр |
+| `includes/class-smartcaptcha-core.php` | Ядро: серверная верификация, подключение JS-файлов, CF7 фильтр |
 | `includes/class-smartcaptcha-admin.php` | Контроллер: регистрация настроек, подключение шаблонов |
 | `template-parts/admin/settings-page.php` | Шаблон: обёртка страницы настроек (форма + кнопка) |
 | `template-parts/admin/field-checkbox.php` | Шаблон: переиспользуемое поле-чекбокс |
@@ -638,7 +650,7 @@ JS-код в `public/js/smartcaptcha-front.js` делает следующее:
 | `uninstall.php` | Очистка опций при удалении |
 | `languages/all-in-one-yandex-smart-captcha.pot` | Шаблон переводов |
 
-### Изменения в теме franchbiz (3 файла, по 2 строки в каждый)
+### Изменения в теме franchbiz (3 файла, по 5 строк в каждый)
 
 | Файл | Действие |
 |------|----------|
@@ -667,6 +679,29 @@ JS-код в `public/js/smartcaptcha-front.js` делает следующее:
 
 1. **sitekey** — нужен ключ из кабинета Яндекса (задаётся в админке плагина)
 2. **CF7-подход** — фильтр `wpcf7_spam` рекомендован (пометит как спам, не ломает флоу CF7)
-3. **Fallback** — если секретный ключ не задан (dev-режим) — пропуск заложен в `verify_token()`
-4. **Кастомное сообщение CF7** — по умолчанию покажет «spam»; если нужно кастомное — потребуется доп. хук `wpcf7_additional_errors`
-5. **Nonces** — кастомные AJAX-формы темы не используют WordPress nonces (проблема темы, не плагина). Рекомендуется добавить nonce-проверку в тему отдельно
+3. **Кастомное сообщение CF7** — по умолчанию покажет «spam»; если нужно кастомное — потребуется доп. хук `wpcf7_additional_errors`
+4. **Nonces** — кастомные AJAX-формы темы не используют WordPress nonces (проблема темы, не плагина). Рекомендуется добавить nonce-проверку в тему отдельно
+
+---
+
+## Исправленные баги
+
+### Баг: пустые поля на странице настроек
+
+**Причина:** в `Admin::render_page()` переменные `$option_group` и `$page_slug` передавались через массив `$args`, но шаблон `settings-page.php` обращался к ним напрямую. `include` не извлекает ключи массива в переменные.
+
+**Исправление:** определять переменные перед `include`:
+
+```php
+// Было:
+$args = [
+    'option_group' => self::OPTION_GROUP,
+    'page_slug'    => self::PAGE_SLUG,
+];
+include AIOYSC_PATH . 'template-parts/admin/settings-page.php';
+
+// Стало:
+$option_group = self::OPTION_GROUP;
+$page_slug    = self::PAGE_SLUG;
+include AIOYSC_PATH . 'template-parts/admin/settings-page.php';
+```
