@@ -1,116 +1,172 @@
-# План: Подключение Яндекс SmartCaptcha на все формы
+# План: Универсальный плагин Яндекс SmartCaptcha для WordPress
 
 ## Контекст
 
-**6 форм, 3 AJAX-эндпоинта, 1 CF7-хук:**
+**Цель:** создать переиспользуемый плагин `all-in-one-yandex-smart-captcha`, который можно загрузить в репозиторий плагинов WordPress и подключить к любому сайту. Плагин автоматически защищает все формы на странице (кастомные + Contact Form 7).
 
-| # | Форма | Тип | Эндпоинт | Шаблон |
-|---|-------|-----|----------|--------|
-| 1 | `#presentation-form` | Custom AJAX | `send-presentation.php` | `page-leads.php:120` |
-| 2 | `#presentationForm` | Custom AJAX | `send-pres-channel_single.php` | `template-parts/form-presentation.php` |
-| 3 | `#projectForm` | Custom AJAX | `send-pres-channel_single.php` | `template-parts/form-presentation.php` |
-| 4 | CF7 «Подписка на рассылку» (ID: 0a41a39) | CF7 AJAX | CF7 internal | `footer.php:7` |
-| 5 | CF7 «Форма заявок» (ID: b9dbc77) | CF7 AJAX | CF7 internal | `footer.php:50` |
-| 6 | CF7 (ID: 61930) | CF7 AJAX | CF7 internal | где-то на сайте |
+**Режим:** невидимый (invisible captcha)  
+**Хранение ключей:** через страницу настроек плагина в админке  
+**Текущий сайт:** тема franchbiz — 3 кастомных AJAX-формы + 2-3 CF7-формы
 
-> Форма `presentation-channel-form` (footer.php:106) — мёртвый код: JS ссылается на `#presentation-channel-form`, но такой формы нет в HTML.
+### Текущие формы на сайте
 
-**Режим:** невидимый (invisible)  
-**Хранение ключа:** `wp-config.php`
+| # | Форма | Тип | Эндпоинт |
+|---|-------|-----|----------|
+| 1 | `#presentation-form` | Custom AJAX | `send-presentation.php` |
+| 2 | `#presentationForm` | Custom AJAX | `send-pres-channel_single.php` |
+| 3 | `#projectForm` | Custom AJAX | `send-pres-channel_single.php` |
+| 4 | CF7 «Подписка на рассылку» (ID: 0a41a39) | CF7 AJAX | CF7 internal |
+| 5 | CF7 «Форма заявок» (ID: b9dbc77) | CF7 AJAX | CF7 internal |
 
 ---
 
-## Шаг 1. Ключ в `wp-config.php`
+## Архитектура плагина
 
-Добавить:
-
-```php
-define( 'YANDEX_SMARTCAPTCHA_SECRET', 'секретный_ключ_из_кабинета' );
+```
+all-in-one-yandex-smart-captcha/
+├── all-in-one-yandex-smart-captcha.php    # Главный файл с хедером
+├── includes/
+│   ├── class-smartcaptcha-core.php        # Ядро: проверка токена, хуки
+│   └── class-smartcaptcha-admin.php       # Страница настроек
+├── public/
+│   └── js/
+│       └── smartcaptcha-front.js          # Клиентский JS: инжект токена во все формы
+├── languages/
+│   └── all-in-one-yandex-smart-captcha.pot
+├── readme.txt
+└── uninstall.php
 ```
 
 ---
 
-## Шаг 2. Серверная верификация — новый файл `inc/smartcaptcha.php`
+## Шаг 1. Главный файл плагина
 
-Создать файл `inc/smartcaptcha.php` с функцией:
+**Файл:** `all-in-one-yandex-smart-captcha.php`
 
 ```php
-function franchbiz_verify_smartcaptcha( $token ) {
-    if ( empty( $token ) ) {
-        return false;
+<?php
+/**
+ * Plugin Name:       All-in-One Yandex SmartCaptcha
+ * Plugin URI:        https://example.com/all-in-one-yandex-smart-captcha
+ * Description:       Защита всех форм на сайте Яндекс SmartCaptcha (invisible). Автоматически инжектит токен в формы, интеграция с Contact Form 7.
+ * Version:           1.0.0
+ * Requires at least: 6.0
+ * Requires PHP:      7.4
+ * Author:            Developer
+ * License:           GPL v2 or later
+ * Text Domain:       all-in-one-yandex-smart-captcha
+ * Domain Path:       /languages
+ */
+
+defined('ABSPATH') || exit;
+
+define('AIOYSC_VERSION', '1.0.0');
+define('AIOYSC_FILE', __FILE__);
+define('AIOYSC_PATH', plugin_dir_path(__FILE__));
+define('AIOYSC_URL', plugin_dir_url(__FILE__));
+define('AIOYSC_BASENAME', plugin_basename(__FILE__));
+
+require_once AIOYSC_PATH . 'includes/class-smartcaptcha-core.php';
+require_once AIOYSC_PATH . 'includes/class-smartcaptcha-admin.php';
+
+register_activation_hook(__FILE__, function () {
+    if (!get_option('aioysc_settings')) {
+        add_option('aioysc_settings', [
+            'enabled'   => true,
+            'sitekey'   => '',
+            'secret'    => '',
+            'mode'      => 'invisible',
+            'cf7_auto'  => true,
+        ]);
     }
+});
 
-    $secret = defined('YANDEX_SMARTCAPTCHA_SECRET') ? YANDEX_SMARTCAPTCHA_SECRET : '';
-    if ( empty( $secret ) ) {
-        error_log('SmartCaptcha: YANDEX_SMARTCAPTCHA_SECRET не задан');
-        return true; // dev-режим: пропускаем
+register_deactivation_hook(__FILE__, function () {
+    // nothing to clean up
+});
+
+add_action('plugins_loaded', function () {
+    AIOYSC\Core::get_instance();
+    if (is_admin()) {
+        AIOYSC\Admin::get_instance();
     }
-
-    $response = wp_remote_post( 'https://smartcaptcha.cloud.yandex.ru/validate', [
-        'body'    => wp_json_encode([
-            'secret' => $secret,
-            'token'  => $token,
-            'ip'     => fm_resolve_ip_address(),
-        ]),
-        'headers' => [ 'Content-Type' => 'application/json' ],
-        'timeout' => 5,
-    ] );
-
-    if ( is_wp_error( $response ) ) {
-        error_log('SmartCaptcha: ошибка запроса — ' . $response->get_error_message());
-        return false;
-    }
-
-    $body = json_decode( wp_remote_retrieve_body( $response ), true );
-    return isset( $body['status'] ) && $body['status'] === 'ok';
-}
+});
 ```
 
 ---
 
-## Шаг 3. Подключение скрипта — `functions.php`
+## Шаг 2. Ядро плагина — серверная проверка + JS фронтенд
 
-Добавить:
-
-```php
-add_action( 'wp_enqueue_scripts', 'franchbiz_smartcaptcha_script' );
-function franchbiz_smartcaptcha_script() {
-    wp_enqueue_script(
-        'yandex-smartcaptcha',
-        'https://smartcaptcha.cloud.yandex.ru/captcha.js?render=onload&onload=onloadSmartcaptcha',
-        [],
-        null,
-        true
-    );
-}
-```
-
----
-
-## Шаг 4. Inline JS — `functions.php`
-
-Добавить inline-скрипт (после скрипта smartcaptcha):
+**Файл:** `includes/class-smartcaptcha-core.php`
 
 ```php
-add_action( 'wp_enqueue_scripts', 'franchbiz_smartcaptcha_inline' );
-function franchbiz_smartcaptcha_inline() {
-    $js = <<<'JS'
+<?php
+namespace AIOYSC;
+
+defined('ABSPATH') || exit;
+
+class Core {
+    private static ?self $instance = null;
+
+    public static function get_instance(): self {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    private function __construct() {
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_assets']);
+
+        // Автоинтеграция с CF7
+        add_filter('wpcf7_spam', [$this, 'cf7_spam_check']);
+    }
+
+    /**
+     * Подключение JS SmartCaptcha на фронтенде
+     */
+    public function enqueue_assets(): void {
+        $settings = get_option('aioysc_settings', []);
+        if (empty($settings['enabled']) || empty($settings['sitekey'])) {
+            return;
+        }
+
+        wp_enqueue_script(
+            'yandex-smartcaptcha',
+            'https://smartcaptcha.cloud.yandex.ru/captcha.js?render=onload&onload=onloadSmartcaptcha',
+            [],
+            null,
+            true
+        );
+
+        $js = $this->get_inline_js($settings['sitekey']);
+        wp_add_inline_script('yandex-smartcaptcha', $js, 'after');
+    }
+
+    /**
+     * Inline JS: автоматически находит ВСЕ формы на странице
+     * и инжектит скрытое поле с токеном
+     */
+    private function get_inline_js(string $sitekey): string {
+        return <<<JS
 window.onloadSmartcaptcha = function() {
     window.smartcaptchaReady = true;
 
-    // Кастомные формы
-    var customForms = document.querySelectorAll('#presentation-form, #presentationForm, #projectForm');
-    customForms.forEach(function(form) {
-        var container = form.querySelector('.smartcaptcha-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.className = 'smartcaptcha-container';
-            container.style.display = 'none';
-            form.appendChild(container);
-        }
+    var selectors = 'form:not(.wpcf7-form)';
+    var cf7Selector = '.wpcf7-form';
+
+    function processForm(form) {
+        var existing = form.querySelector('input[name="smartcaptcha_token"]');
+        if (existing) return;
+
+        var container = document.createElement('div');
+        container.className = 'smartcaptcha-container';
+        container.style.display = 'none';
+        form.appendChild(container);
+
         try {
             smartcaptcha.render(container, {
-                sitekey: 'ключ_из_кабинета',
+                sitekey: '{$sitekey}',
                 invisible: true,
                 callback: function(token) {
                     var input = form.querySelector('input[name="smartcaptcha_token"]');
@@ -126,128 +182,329 @@ window.onloadSmartcaptcha = function() {
         } catch(e) {
             console.warn('SmartCaptcha render error:', e);
         }
-    });
+    }
+
+    // Кастомные формы (не CF7)
+    document.querySelectorAll(selectors).forEach(processForm);
 
     // CF7 формы
-    var cf7Forms = document.querySelectorAll('.wpcf7-form');
-    cf7Forms.forEach(function(form) {
-        var container = form.querySelector('.smartcaptcha-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.className = 'smartcaptcha-container';
-            container.style.display = 'none';
-            form.appendChild(container);
-        }
-        try {
-            smartcaptcha.render(container, {
-                sitekey: 'ключ_из_кабинета',
-                invisible: true,
-                callback: function(token) {
-                    var input = form.querySelector('input[name="smartcaptcha_token"]');
-                    if (!input) {
-                        input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'smartcaptcha_token';
-                        form.appendChild(input);
-                    }
-                    input.value = token;
-                }
-            });
-        } catch(e) {
-            console.warn('SmartCaptcha render error:', e);
-        }
-    });
+    document.querySelectorAll(cf7Selector).forEach(processForm);
 };
 JS;
-    wp_add_inline_script( 'yandex-smartcaptcha', $js, 'after' );
-}
-```
-
----
-
-## Шаг 5. Верификация в 3 AJAX-обработчиках
-
-Добавить в каждый файл после `require` и до обработки данных:
-
-### `ajax/send-presentation.php` — после строки 3:
-```php
-require_once($_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/franchbiz/inc/smartcaptcha.php');
-if ( !franchbiz_verify_smartcaptcha( $_POST['smartcaptcha_token'] ?? '' ) ) {
-    echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
-    exit;
-}
-```
-
-### `ajax/send-presentation-channel.php` — после строки 2:
-```php
-require_once($_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/franchbiz/inc/smartcaptcha.php');
-if ( !franchbiz_verify_smartcaptcha( $_POST['smartcaptcha_token'] ?? '' ) ) {
-    echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
-    exit;
-}
-```
-
-### `ajax/send-pres-channel_single.php` — после строки 3:
-```php
-require_once($_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/franchbiz/inc/smartcaptcha.php');
-if ( !franchbiz_verify_smartcaptcha( $_POST['smartcaptcha_token'] ?? '' ) ) {
-    echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
-    exit;
-}
-```
-
----
-
-## Шаг 6. CF7 интеграция — хук верификации
-
-В `inc/smartcaptcha.php` добавить:
-
-```php
-add_filter( 'wpcf7_spam', 'franchbiz_cf7_smartcaptcha_spam_check' );
-function franchbiz_cf7_smartcaptcha_spam_check( $spam ) {
-    if ( ! $spam ) {
-        $token = $_POST['smartcaptcha_token'] ?? '';
-        $spam = !franchbiz_verify_smartcaptcha( $token );
     }
-    return $spam;
+
+    /**
+     * Публичная функция верификации для тем/плагинов.
+     * Использование: if ( ! AIOYSC\Core::verify_token() ) { ... }
+     *
+     * @return true если токен валиден, false если нет
+     */
+    public static function verify_token(): bool {
+        $token = $_POST['smartcaptcha_token'] ?? '';
+
+        if (empty($token)) {
+            return false;
+        }
+
+        $settings = get_option('aioysc_settings', []);
+        $secret = $settings['secret'] ?? '';
+
+        if (empty($secret)) {
+            error_log('SmartCaptcha: секретный ключ не задан в настройках плагина');
+            return true; // dev-режим: пропускаем если ключ не задан
+        }
+
+        $ip = self::get_client_ip();
+
+        $response = wp_remote_post('https://smartcaptcha.cloud.yandex.ru/validate', [
+            'body'    => wp_json_encode([
+                'secret' => $secret,
+                'token'  => $token,
+                'ip'     => $ip,
+            ]),
+            'headers' => ['Content-Type' => 'application/json'],
+            'timeout' => 5,
+        ]);
+
+        if (is_wp_error($response)) {
+            error_log('SmartCaptcha: ошибка запроса — ' . $response->get_error_message());
+            return false;
+        }
+
+        $body = json_decode(wp_remote_retrieve_body($response), true);
+        return isset($body['status']) && $body['status'] === 'ok';
+    }
+
+    /**
+     * Получение IP клиента (совместимо с прокси)
+     */
+    private static function get_client_ip(): string {
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            return sanitize_text_field(wp_unslash($_SERVER['HTTP_CLIENT_IP']));
+        }
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            return sanitize_text_field(wp_unslash(trim($ips[0])));
+        }
+        return isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+    }
+
+    /**
+     * CF7: автоматическая проверка токена
+     * Помечает форму как спам если токен невалиден
+     */
+    public function cf7_spam_check(bool $spam): bool {
+        if (!$spam) {
+            $token = $_POST['smartcaptcha_token'] ?? '';
+            if (!empty($token)) {
+                $spam = !self::verify_token();
+            }
+        }
+        return $spam;
+    }
 }
 ```
 
 ---
 
-## Шаг 7. Подключение в `functions.php`
+## Шаг 3. Админка — страница настроек
 
-Добавить в начало:
+**Файл:** `includes/class-smartcaptcha-admin.php`
 
 ```php
-require_once get_template_directory() . '/inc/smartcaptcha.php';
+<?php
+namespace AIOYSC;
+
+defined('ABSPATH') || exit;
+
+class Admin {
+    private static ?self $instance = null;
+    private const OPTION_GROUP = 'aioysc_settings';
+    private const OPTION_NAME  = 'aioysc_settings';
+    private const PAGE_SLUG    = 'aioysc-settings';
+
+    public static function get_instance(): self {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    private function __construct() {
+        add_action('admin_menu', [$this, 'add_menu']);
+        add_action('admin_init', [$this, 'register_settings']);
+    }
+
+    public function add_menu(): void {
+        add_options_page(
+            'Yandex SmartCaptcha',
+            'Yandex SmartCaptcha',
+            'manage_options',
+            self::PAGE_SLUG,
+            [$this, 'render_page']
+        );
+    }
+
+    public function register_settings(): void {
+        register_setting(
+            self::OPTION_GROUP,
+            self::OPTION_NAME,
+            [
+                'type'              => 'array',
+                'sanitize_callback' => [$this, 'sanitize'],
+                'default'           => [
+                    'enabled'  => true,
+                    'sitekey'  => '',
+                    'secret'   => '',
+                    'mode'     => 'invisible',
+                    'cf7_auto' => true,
+                ],
+            ]
+        );
+
+        add_settings_section(
+            'aioysc_main',
+            'Настройки SmartCaptcha',
+            null,
+            self::PAGE_SLUG
+        );
+
+        add_settings_field('enabled', 'Включить', [$this, 'render_checkbox'], self::PAGE_SLUG, 'aioysc_main', ['key' => 'enabled']);
+        add_settings_field('sitekey', 'Site Key', [$this, 'render_text'], self::PAGE_SLUG, 'aioysc_main', ['key' => 'sitekey', 'desc' => 'Публичный ключ из кабинета Яндекса']);
+        add_settings_field('secret', 'Secret Key', [$this, 'render_text'], self::PAGE_SLUG, 'aioysc_main', ['key' => 'secret', 'type' => 'password', 'desc' => 'Секретный ключ из кабинета Яндекса']);
+        add_settings_field('cf7_auto', 'CF7 автоинтеграция', [$this, 'render_checkbox'], self::PAGE_SLUG, 'aioysc_main', ['key' => 'cf7_auto', 'desc' => 'Автоматически проверять токен во всех формах Contact Form 7']);
+    }
+
+    public function sanitize(array $input): array {
+        return [
+            'enabled'  => !empty($input['enabled']),
+            'sitekey'  => sanitize_text_field($input['sitekey'] ?? ''),
+            'secret'   => sanitize_text_field($input['secret'] ?? ''),
+            'mode'     => sanitize_text_field($input['mode'] ?? 'invisible'),
+            'cf7_auto' => !empty($input['cf7_auto']),
+        ];
+    }
+
+    public function render_page(): void {
+        if (!current_user_can('manage_options')) return;
+        ?>
+        <div class="wrap">
+            <h1>Yandex SmartCaptcha</h1>
+            <form action="options.php" method="post">
+                <?php
+                settings_fields(self::OPTION_GROUP);
+                do_settings_sections(self::PAGE_SLUG);
+                submit_button('Сохранить');
+                ?>
+            </form>
+            <hr>
+            <h3>Использование в теме</h3>
+            <p>В обработчике AJAX-формы добавьте:</p>
+            <pre><code>require_once ABSPATH . 'wp-content/plugins/all-in-one-yandex-smart-captcha/includes/class-smartcaptcha-core.php';
+if (!AIOYSC\Core::verify_token()) {
+    wp_send_json_error(['message' => 'Проверка защиты не пройдена.']);
+    wp_die();
+}</code></pre>
+        </div>
+        <?php
+    }
+
+    public function render_checkbox(array $args): void {
+        $options = get_option(self::OPTION_NAME, []);
+        $value = $options[$args['key']] ?? false;
+        ?>
+        <input type="checkbox"
+               id="<?php echo esc_attr($args['key']); ?>"
+               name="<?php echo esc_attr(self::OPTION_NAME . '[' . $args['key'] . ']'); ?>"
+               value="1"
+               <?php checked($value, true); ?>>
+        <?php if (!empty($args['desc'])): ?>
+            <p class="description"><?php echo esc_html($args['desc']); ?></p>
+        <?php endif;
+    }
+
+    public function render_text(array $args): void {
+        $options = get_option(self::OPTION_NAME, []);
+        $value = $options[$args['key']] ?? '';
+        $type = $args['type'] ?? 'text';
+        ?>
+        <input type="<?php echo esc_attr($type); ?>"
+               id="<?php echo esc_attr($args['key']); ?>"
+               name="<?php echo esc_attr(self::OPTION_NAME . '[' . $args['key'] . ']'); ?>"
+               value="<?php echo esc_attr($value); ?>"
+               class="regular-text">
+        <?php if (!empty($args['desc'])): ?>
+            <p class="description"><?php echo esc_html($args['desc']); ?></p>
+        <?php endif;
+    }
+}
 ```
 
 ---
 
-## Шаг 8. Не требуется
+## Шаг 4. Интеграция с темой franchbiz
 
-- Rebuild `front/dist/main.js` — не нужен, изменения только на PHP-стороне
-- Изменение шаблонов — контейнеры для капчи создаются автоматически через JS
+Кастомные AJAX-обработчики темы загружают WordPress через `wp-load.php`, поэтому плагин уже доступен. Достаточно добавить **2 строки** в каждый файл.
+
+### `ajax/send-presentation.php` — после `require($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php');`
+
+```php
+if (!AIOYSC\Core::verify_token()) {
+    echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
+    exit;
+}
+```
+
+### `ajax/send-presentation-channel.php` — после `require`:
+
+```php
+if (!AIOYSC\Core::verify_token()) {
+    echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
+    exit;
+}
+```
+
+### `ajax/send-pres-channel_single.php` — после `require`:
+
+```php
+if (!AIOYSC\Core::verify_token()) {
+    echo json_encode(['success' => false, 'message' => 'Проверка защиты не пройдена. Попробуйте ещё раз.']);
+    exit;
+}
+```
+
+### CF7 формы
+
+Автоматически — плагин подключает фильтр `wpcf7_spam` в ядре. Никаких изменений в теме не нужно.
 
 ---
 
-## Итого: файлы
+## Шаг 5. Клиентский JS — как работает автоматический инжект
+
+JS-код в `get_inline_js()` делает следующее:
+
+1. Ждёт загрузки SmartCaptcha SDK (`onloadSmartcaptcha`)
+2. Находит **все формы** на странице через `document.querySelectorAll('form:not(.wpcf7-form)')`
+3. Находит **все CF7 формы** через `document.querySelectorAll('.wpcf7-form')`
+4. Для каждой формы:
+   - Создаёт скрытый `<div class="smartcaptcha-container">` внутри формы
+   - Рендерит invisible captcha в этот контейнер
+   - При получении токена — создаёт/обновляет `<input type="hidden" name="smartcaptcha_token">` внутри формы
+5. При отправке формы токен уходит вместе с остальными данными
+
+**Результат:** JavaScript работает на 100% автоматически. Ни одну форму не пропустит. Разработчику темы нужно только вызвать `AIOYSC\Core::verify_token()` на сервере.
+
+---
+
+## Шаг 6. Что не нужно менять
+
+- `wp-config.php` — ключи хранятся в БД через настройки плагина
+- `functions.php` темы — ничего не добавляется
+- Шаблоны темы — контейнеры для капчи создаются автоматически через JS
+- `front/dist/main.js` — не пересобирается, изменения только на PHP-стороне
+
+---
+
+## Итого: файлы плагина
+
+| Файл | Описание |
+|------|----------|
+| `all-in-one-yandex-smart-captcha.php` | Главный файл с хедером плагина, константы, подключение классов |
+| `includes/class-smartcaptcha-core.php` | Ядро: `verify_token()` (публичный API), enqueue JS, CF7 фильтр |
+| `includes/class-smartcaptcha-admin.php` | Страница настроек в админке (sitekey, secret, вкл/выкл) |
+| `public/js/smartcaptcha-front.js` | (опционально) внешний JS-файл вместо inline |
+| `readme.txt` | Описание для каталога плагинов |
+| `uninstall.php` | Очистка опций при удалении |
+| `languages/all-in-one-yandex-smart-captcha.pot` | Шаблон переводов |
+
+### Изменения в теме franchbiz (3 файла, по 2 строки в каждый)
 
 | Файл | Действие |
 |------|----------|
-| `wp-config.php` | Добавить `define()` |
-| `inc/smartcaptcha.php` | **Новый файл** — функция верификации + CF7-хук |
-| `functions.php` | Подключить `inc/smartcaptcha.php` + enqueue скрипта + inline JS |
-| `ajax/send-presentation.php` | Добавить проверку токена (2 строки) |
-| `ajax/send-presentation-channel.php` | Добавить проверку токена (2 строки) |
-| `ajax/send-pres-channel_single.php` | Добавить проверку токена (2 строки) |
+| `ajax/send-presentation.php` | Добавить `AIOYSC\Core::verify_token()` |
+| `ajax/send-presentation-channel.php` | Добавить `AIOYSC\Core::verify_token()` |
+| `ajax/send-pres-channel_single.php` | Добавить `AIOYSC\Core::verify_token()` |
+
+---
+
+## Преимущества перед старым планом
+
+| Старый план (тема) | Новый план (плагин) |
+|---------------------|----------------------|
+| Ключи в `wp-config.php` | Ключи в БД через админку |
+| Функция `franchbiz_verify_smartcaptcha()` с привязкой к теме | Публичный API `AIOYSC\Core::verify_token()` — универсальный |
+| JS привязан к конкретным селекторам форм | JS автоматически находит ВСЕ формы на странице |
+| Требует правок `functions.php` темы | Самостоятельный плагин, ничего в тему добавлять не нужно |
+| CF7-интеграция в файле темы | CF7-интеграция в плагине, работает сразу |
+| Нельзя переиспользовать на другом сайте | Залил zip-плагин → включил → работает |
+| Нет админки | Страница настроек в WordPress |
 
 ---
 
 ## Открытые вопросы
 
-1. **sitekey** — нужен ключ из кабинета Яндекса (для передачи в `smartcaptcha.render()`)
+1. **sitekey** — нужен ключ из кабинета Яндекса (задаётся в админке плагина)
 2. **CF7-подход** — фильтр `wpcf7_spam` рекомендован (пометит как спам, не ломает флоу CF7)
-3. **Fallback** — если ключ не задан (dev-режим) — пропуск заложен в плане
-4. **Кастомное сообщение CF7** — по умолчанию покажет «spam»; если нужно кастомное — потребуется доп. хук
+3. **Fallback** — если секретный ключ не задан (dev-режим) — пропуск заложен в `verify_token()`
+4. **Кастомное сообщение CF7** — по умолчанию покажет «spam»; если нужно кастомное — потребуется доп. хук `wpcf7_additional_errors`
+5. **Nonces** — кастомные AJAX-формы темы не используют WordPress nonces (проблема темы, не плагина). Рекомендуется добавить nonce-проверку в тему отдельно
